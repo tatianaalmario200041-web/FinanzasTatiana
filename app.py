@@ -73,11 +73,11 @@ def formato_COP(valor):
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Panel con Porcentajes de Avance y Saldos Pendientes 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria de obligaciones con cuotas reales
+# Memoria de obligaciones con cuotas reales corregidas para Camilo (6 pagos total, 2 pagados)
 if 'obligaciones' not in st.session_state:
     st.session_state.obligaciones = [
         # Créditos / Préstamos a cuotas
-        {"nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 3, "pagadas": 2},
+        {"nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2},
         {"nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7},
         {"nombre": "Addi Totto", "valor": 15000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
         {"nombre": "Addi Puntos", "valor": 110000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
