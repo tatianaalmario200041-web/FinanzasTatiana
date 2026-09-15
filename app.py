@@ -62,16 +62,6 @@ st.markdown("""
         border-left: 5px solid #DB2777;
         text-align: center;
     }
-    
-    .quincena-card {
-        background: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 100%);
-        padding: 20px;
-        border-radius: 16px;
-        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
-        border: 2px solid #DB2777;
-        text-align: center;
-        margin-bottom: 20px;
-    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -81,7 +71,7 @@ def formato_COP(valor):
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Panel con Rendimiento de Quincena, Imprevistos y Control Real 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel de Control Financiero Interactivo 🌸💜</div>', unsafe_allow_html=True)
 
 # Memoria de obligaciones con cuotas reales
 if 'obligaciones' not in st.session_state:
@@ -107,7 +97,7 @@ if 'imprevistos' not in st.session_state:
 # Sidebar de Configuración Real
 st.sidebar.header("⚙️ Tus Cuentas y Nómina")
 saldo_actual_banco = st.sidebar.number_input("Saldo Actual en Bancolombia (COP)", value=2800000.0, step=100000.0)
-nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal (Desprendible Davivienda)", value=1294007.0, step=10000.0)
+nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal Base", value=1294007.0, step=10000.0)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("### 🚨 Agregar Gasto Imprevisto")
@@ -117,51 +107,74 @@ with st.sidebar.form(key="form_imprevisto"):
     btn_agregar_imp = st.form_submit_button("Registrar Imprevisto")
     if btn_agregar_imp and nombre_imp and valor_imp > 0:
         st.session_state.imprevistos.append({"nombre": nombre_imp, "valor": valor_imp})
-        st.success(f"¡Imprevisto '{nombre_imp}' agregado con éxito!")
+        st.success(f"¡Imprevisto '{nombre_imp}' agregado!")
         st.rerun()
 
 st.markdown("---")
 
-# SECCIÓN: Rendimiento de Quincena Actual (Se va restando automáticamente)
+# SECCIÓN: Rendimiento de Quincena Actual (Modificable, se resta y suma dinámicamente)
 st.markdown("### 💸 Rendimiento de Quincena Actual")
 
-# Base de la quincena (puedes tomar tu nómina quincenal o tu saldo disponible de inicio de ciclo)
-presupuesto_quincena_inicial = nomina_quincenal_neta
+col_config1, col_config2 = st.columns(2)
+with col_config1:
+    presupuesto_quincena_inicial = st.number_input(
+        "📥 Valor Inicial / Base de esta Quincena (COP)", 
+        value=nomina_quincenal_neta, 
+        step=10000.0,
+        key="input_base_quincena"
+    )
+with col_config2:
+    ingresos_extra = st.number_input(
+        "➕ Ingresos Extras o Abonos recibidos en la Quincena (COP)", 
+        value=0.0, 
+        step=10000.0,
+        key="input_extras_quincena"
+    )
 
-# Calcular cuánto se ha gastado/pagado en total de las obligaciones en este momento
-# (Para los créditos se cuenta el valor unitario de la cuota si se han pagado, o puedes adaptar según selecciones del mes)
-total_pagado_obligaciones_actual = sum(item["valor"] if "total" in item and item["pagadas"] > 0 else (item["valor"] if item.get("estado_mes", False) else 0) for item in st.session_state.obligaciones)
+# Calcular total pagado de obligaciones que se hayan marcado en este ciclo/sesión
+total_pagado_obligaciones_actual = sum(
+    item["valor"] for item in st.session_state.obligaciones 
+    if ("total" in item and item.get("pagado_en_quincena", False)) or ("total" not in item and item.get("estado_mes", False))
+)
 total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos)
 
-quincena_que_queda = presupuesto_quincena_inicial - total_pagado_obligaciones_actual - total_imprevistos
+# Fórmula final: Inicial + Extras - Pagado - Imprevistos
+quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pagado_obligaciones_actual - total_imprevistos
 
-col_q1, col_q2, col_q3 = st.columns(3)
+col_q1, col_q2, col_q3, col_q4 = st.columns(4)
 with col_q1:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#7C3AED; font-size:1rem;">📥 Quincena Inicial</h4>
-        <h3 style="color:#333;">{formato_COP(presupuesto_quincena_inicial)}</h3>
+        <h4 style="color:#7C3AED; font-size:0.9rem;">📥 Quincena + Extras</h4>
+        <h3 style="color:#333; font-size:1.3rem;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h3>
     </div>
     """, unsafe_allow_html=True)
 with col_q2:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#E11D48; font-size:1rem;">📤 Total Pagado / Gastado</h4>
-        <h3 style="color:#333;">{formato_COP(total_pagado_obligaciones_actual + total_imprevistos)}</h3>
+        <h4 style="color:#E11D48; font-size:0.9rem;">📤 Obligaciones Pagadas</h4>
+        <h3 style="color:#333; font-size:1.3rem;">{formato_COP(total_pagado_obligaciones_actual)}</h3>
     </div>
     """, unsafe_allow_html=True)
 with col_q3:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#D97706; font-size:0.9rem;">🚨 Imprevistos</h4>
+        <h3 style="color:#333; font-size:1.3rem;">{formato_COP(total_imprevistos)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
     st.markdown(f"""
     <div class="metric-card" style="border-left: 5px solid {color_queda};">
-        <h4 style="color:{color_queda}; font-size:1rem;">✨ QUEDA</h4>
-        <h3 style="color:#333;">{formato_COP(quincena_que_queda)}</h3>
+        <h4 style="color:{color_queda}; font-size:0.9rem;">✨ QUEDA</h4>
+        <h3 style="color:#333; font-size:1.3rem;">{formato_COP(quincena_que_queda)}</h3>
     </div>
     """, unsafe_allow_html=True)
 
 # Listado y opción de borrar imprevistos si se equivocó
 if st.session_state.imprevistos:
-    with st.expander("📌 Ver Detalle de Gastos Imprevistos Registrados"):
+    with st.expander("📌 Ver y Administrar Gastos Imprevistos Registrados"):
         for idx_imp, imp in enumerate(st.session_state.imprevistos):
             c_imp1, c_imp2 = st.columns([4, 1])
             with c_imp1:
@@ -207,8 +220,8 @@ st.progress(porcentaje_avance_global / 100)
 
 st.markdown("---")
 
-# SECCIÓN PRINCIPAL: Control con Chulitos, Porcentaje y Saldo Pendiente
-st.markdown("### 🎯 Control de Cuotas y Motivación (¡Mira tu saldo pendiente y % de avance!)")
+# SECCIÓN PRINCIPAL: Control de Cuotas y Afectación en Quincena
+st.markdown("### 🎯 Control de Cuotas (¡Al pagar aquí, se descuenta de tu Quincena Actual y suma cuotas!)")
 
 for idx, item in enumerate(st.session_state.obligaciones):
     col_i1, col_i2, col_i3, col_i4 = st.columns([3, 2, 2, 2])
@@ -223,7 +236,9 @@ for idx, item in enumerate(st.session_state.obligaciones):
         if "total" in item:
             porcentaje_item = int((item["pagadas"] / item["total"]) * 100)
             saldo_pendiente = item["valor"] * (item["total"] - item["pagadas"])
-            st.markdown(f"Progreso: **{item['pagadas']} de {item['total']} ({porcentaje_item}%)**<br><span style='color:#E11D48; font-size:0.85rem;'>Pendiente: {formato_COP(saldo_pendiente)}</span>", unsafe_allow_html=True)
+            pagando_esta_quincena = item.get("pagado_en_quincena", False)
+            estado_q_txt = "🟢 Pagada este ciclo" if pagando_esta_quincena else "⚪ Pendiente este ciclo"
+            st.markdown(f"Progreso: **{item['pagadas']} de {item['total']} ({porcentaje_item}%)**<br><span style='color:#E11D48; font-size:0.85rem;'>Pendiente: {formato_COP(saldo_pendiente)}</span><br><span style='font-size:0.75rem; color:#6B21A8;'>{estado_q_txt}</span>", unsafe_allow_html=True)
         else:
             estado_txt = "✅ Pagado" if item.get("estado_mes", False) else "⏳ Pendiente"
             saldo_fijo = 0 if item.get("estado_mes", False) else item["valor"]
@@ -234,6 +249,7 @@ for idx, item in enumerate(st.session_state.obligaciones):
             if item["pagadas"] < item["total"]:
                 if st.button(f"✅ Pagar Cuota", key=f"pagar_{idx}"):
                     st.session_state.obligaciones[idx]["pagadas"] += 1
+                    st.session_state.obligaciones[idx]["pagado_en_quincena"] = True
                     st.rerun()
             else:
                 st.markdown("🎉 **¡Completado!**")
@@ -250,6 +266,7 @@ for idx, item in enumerate(st.session_state.obligaciones):
             if item["pagadas"] > 0:
                 if st.button(f"↩️ Deshacer", key=f"deshacer_{idx}"):
                     st.session_state.obligaciones[idx]["pagadas"] -= 1
+                    st.session_state.obligaciones[idx]["pagado_en_quincena"] = False
                     st.rerun()
         else:
             if item.get("estado_mes", False):
