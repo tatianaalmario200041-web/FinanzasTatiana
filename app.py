@@ -84,9 +84,9 @@ st.markdown("""
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Control por Quincena Real, Gas Actualizado, Créditos y Ahorros 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Control Real con Desprendible de Nómina, Gas Actualizado & "Por Pagar" 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria para créditos y gastos extra
+# Memoria de créditos
 if 'creditos_cuotas' not in st.session_state:
     st.session_state.creditos_cuotas = [
         {"Crédito / Tienda": "Addi Totto", "Valor Cuota Mensual": 15000.0, "Cuotas Totales": 3, "Cuotas Pagadas": 1},
@@ -96,29 +96,32 @@ if 'creditos_cuotas' not in st.session_state:
         {"Crédito / Tienda": "Sistecredito Maleta", "Valor Cuota Mensual": 66000.0, "Cuotas Totales": 4, "Cuotas Pagadas": 2}
     ]
 
-if 'gastos_extra' not in st.session_state:
-    st.session_state.gastos_extra = []
-
-# Sidebar de Configuración de Ingresos y Gas
+# Sidebar de Configuración Real
 st.sidebar.header("⚙️ Tus Cuentas y Nómina Real")
 saldo_actual_banco = st.sidebar.number_input("Saldo Actual en Bancolombia (COP)", value=2800000.0, step=100000.0)
-nomina_quincenal_neta = st.sidebar.number_input("Pago Neto por Quincena (Desprendible)", value=1294007.0, step=10000.0)
+
+# Ingreso neto real según tu desprendible de pago
+nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal (Desprendible Davivienda)", value=1294007.0, step=10000.0)
 
 st.sidebar.subheader("🔥 Servicio de Gas (Actualizado)")
 gas_mensual = st.sidebar.number_input("Recibo de Gas Total Mensual", value=780000.0, step=10000.0)
-gas_quincenal = gas_mensual / 2  # Se divide equitativamente entre las dos quincenas ($390.000 c/u)
+gas_quincenal = gas_mensual / 2  # $390.000 por quincena
 
-st.sidebar.subheader("📌 Otros Gastos Fijos por Quincena")
+st.sidebar.subheader("📌 Gastos Fijos por Quincena")
 camilo_q = st.sidebar.number_input("Cuota Camilo (Cada Quincena)", value=373500.0, step=10000.0)
 tc_q = st.sidebar.number_input("Tarjeta de Crédito / TC (Cada Quincena)", value=160000.0, step=10000.0)
 gastos_libres_q = st.sidebar.number_input("Gastos Libres (Cada Quincena)", value=100000.0, step=10000.0)
 
+st.sidebar.subheader("📉 Deudas Principales 'Por Pagar'")
+deuda_negro = st.sidebar.number_input("Deuda Negro (Total)", value=1600000.0, step=50000.0)
+rapicredid = st.sidebar.number_input("Rapicredid (Total)", value=350000.0, step=10000.0)
+
 st.markdown("---")
 
 # SECCIÓN 1: Gestión de Cuotas (Addi / Sistecredito)
-st.markdown("### 🛍️ Seguimiento de Créditos a Cuotas (Addi / Sistecredito)")
+st.markdown("### 🛍️ Progreso de Créditos a Cuotas (Addi / Sistecredito)")
 
-with st.expander("➕ Administrar o ver progreso de tus cuotas", expanded=False):
+with st.expander("➕ Administrar o ver cuotas pendientes", expanded=False):
     col_c1, col_c2, col_c3, col_c4 = st.columns([2, 1, 1, 1])
     with col_c1:
         nombre_credito = st.text_input("Nombre (Ej: Addi Totto...)", placeholder="Tienda")
@@ -140,7 +143,6 @@ with st.expander("➕ Administrar o ver progreso de tus cuotas", expanded=False)
             st.success("¡Agregado!")
             st.rerun()
 
-# Mostrar tabla de créditos activos
 datos_tabla_creditos = []
 for item in st.session_state.creditos_cuotas:
     pendientes = item["Cuotas Totales"] - item["Cuotas Pagadas"]
@@ -165,8 +167,8 @@ if st.button("🗑️ Borrar lista de créditos"):
 
 st.markdown("---")
 
-# SECCIÓN 2: Desglose Específico por Quincena (Basado en tu Tabla Real)
-st.markdown("### 📊 Desglose de Gastos por Quincena")
+# SECCIÓN 2: Desglose Real por Quincena
+st.markdown("### 📊 Desglose de Gastos por Quincena (Real)")
 
 col_q1, col_q2 = st.columns(2)
 
@@ -175,7 +177,6 @@ with col_q1:
     st.markdown("#### 🗓️ Quincena 15 (Mitad de Mes)")
     internet_q1 = 55000.0
     parqueadero_q1 = 25000.0
-    # Sistecreditos activos en la quincena 1
     sistecredito_total_q1 = 39000.0 + 59000.0 + 66000.0  # Vestido + Sudadera + Maleta
     
     total_gastos_q1 = camilo_q + tc_q + gas_quincenal + internet_q1 + parqueadero_q1 + sistecredito_total_q1 + gastos_libres_q
@@ -185,20 +186,18 @@ with col_q1:
     st.write(f"- Gas (Actualizado): $ {gas_quincenal:,.0f}")
     st.write(f"- Internet: $ {internet_q1:,.0f}")
     st.write(f"- Parqueadero: $ {parqueadero_q1:,.0f}")
-    st.write(f"- Sistecreditos (Vestido, Sudadera, Maleta): $ {sistecredito_total_q1:,.0f}")
+    st.write(f"- Sistecreditos: $ {sistecredito_total_q1:,.0f}")
     st.write(f"- Gastos Libres: $ {gastos_libres_q:,.0f}")
-    st.markdown(f"**Total Gastos Quincena 15: 🔴 $ {total_gastos_q1:,.0f} COP**")
+    st.markdown(f"**Total Gastos Q15: 🔴 $ {total_gastos_q1:,.0f} COP**")
     
-    # Saldo tras Q1
     saldo_tras_q1 = saldo_actual_banco - total_gastos_q1
     st.markdown(f"**Saldo Disponible Post-Gastos Q1:** $ {saldo_tras_q1:,.0f} COP")
 
-# Quincena Fin de Mes
+# Quincena Fin de Mes (Incluye tu nómina real de $1.294.007)
 with col_q2:
     st.markdown("#### 🗓️ Quincena Fin de Mes")
     internet_q_fin = 77000.0
     parqueadero_q_fin = 25000.0
-    # Addis activos en fin de mes
     addi_total_qfin = 110000.0 + 15000.0  # Addi Puntos + Addi Totto
     
     total_gastos_qfin = camilo_q + tc_q + gas_quincenal + internet_q_fin + parqueadero_q_fin + addi_total_qfin + gastos_libres_q
@@ -208,18 +207,18 @@ with col_q2:
     st.write(f"- Gas (Actualizado): $ {gas_quincenal:,.0f}")
     st.write(f"- Internet: $ {internet_q_fin:,.0f}")
     st.write(f"- Parqueadero: $ {parqueadero_q_fin:,.0f}")
-    st.write(f"- Addis (Puntos + Totto): $ {addi_total_qfin:,.0f}")
+    st.write(f"- Addis: $ {addi_total_qfin:,.0f}")
     st.write(f"- Gastos Libres: $ {gastos_libres_q:,.0f}")
     st.markdown(f"**Total Gastos Fin de Mes: 🔴 $ {total_gastos_qfin:,.0f} COP**")
     
-    # Saldo tras Nómina del 20 y fin de mes
+    # Aquí sumamos la nómina neta real del desprendible
     saldo_tras_nomina_real = saldo_tras_q1 + nomina_quincenal_neta
     balance_final_mes = saldo_tras_nomina_real - total_gastos_qfin
-    st.markdown(f"**Saldo Tras Nómina Día 20:** $ {saldo_tras_nomina_real:,.0f} COP")
+    st.markdown(f"**Saldo Tras Nómina Día 20 (Neta Real):** $ {saldo_tras_nomina_real:,.0f} COP")
 
 st.markdown("---")
 
-# Tarjetas de Resumen General Real
+# Tarjetas de Métricas Clave
 col_m1, col_m2 = st.columns(2)
 with col_m1:
     st.markdown(f"""
@@ -236,17 +235,25 @@ with col_m2:
     </div>
     """, unsafe_allow_html=True)
 
-# Alertas inteligentes
-st.markdown("### 🚨 Estado y Recomendaciones 'Por Pagar'")
+# Sección de Obligaciones "Por Pagar"
+st.markdown("### 🚨 Resumen de Obligaciones 'Por Pagar'")
+tabla_por_pagar = [
+    {"Obligación": "Deuda Negro", "Monto Total": deuda_negro, "Estado": "Por Pagar (Aparte)"},
+    {"Obligación": "Rapicredid", "Monto Total": rapicredid, "Estado": "Pendiente de Cierre"},
+    {"Obligación": "Total Cuotas Activas (Addi/Sistecredito)", "Monto Total": sum(item["Valor Cuota Mensual"] for item in st.session_state.creditos_cuotas), "Estado": "En Curso Mes"}
+]
+df_por_pagar = pd.DataFrame(tabla_por_pagar)
+st.dataframe(df_por_pagar, use_container_width=True)
+
 if balance_final_mes < 0:
     st.markdown(f"""
     <div class="alert-card-danger">
-        ⚠️ <b>Alerta Financiera:</b> Con el nuevo aumento del gas y tus compromisos actuales, el mes presenta un déficit proyectado de <b>$ {abs(balance_final_mes):,.0f} COP</b>. Te sugiero revisar los gastos libres o ajustar los abonos.
+        ⚠️ <b>Alerta de Déficit Real:</b> Al restar los gastos fijos, el gas actualizado y sumar tu nómina neta real de <b>$ {nomina_quincenal_neta:,.0f} COP</b>, el mes presenta un faltante de <b>$ {abs(balance_final_mes):,.0f} COP</b> sin contar todavía las deudas con Negro o Rapicredid. ¡Hay que vigilarlo con lupa!
     </div>
     """, unsafe_allow_html=True)
 else:
     st.markdown(f"""
     <div class="alert-card-success">
-        ✅ <b>¡Excelente!</b> A pesar del aumento en el gas, tus ingresos netos de nómina cubren perfectamente las obligaciones de ambas quincenas y te queda un sobrante de <b>$ {balance_final_mes:,.0f} COP</b>.
+        ✅ <b>Balance del Mes:</b> Tu nómina neta de <b>$ {nomina_quincenal_neta:,.0f} COP</b> cubre los gastos operativos del mes dejando un remanente de <b>$ {balance_final_mes:,.0f} COP</b> para destinar a tus deudas pendientes ("Por Pagar").
     </div>
     """, unsafe_allow_html=True)
