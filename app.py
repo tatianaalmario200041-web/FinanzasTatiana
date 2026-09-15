@@ -62,21 +62,30 @@ st.markdown("""
         border-left: 5px solid #DB2777;
         text-align: center;
     }
+    
+    .quincena-card {
+        background: linear-gradient(135deg, #FCE7F3 0%, #EDE9FE 100%);
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 15px rgba(124, 58, 237, 0.1);
+        border: 2px solid #DB2777;
+        text-align: center;
+        margin-bottom: 20px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
-# Función para formatear en pesos colombianos ($ 1.294.007)
+# Función para formatear en pesos colombianos
 def formato_COP(valor):
     return f"$ {valor:,.0f}".replace(",", ".")
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Panel con Porcentajes de Avance y Control de Cuotas Reales 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel con Rendimiento de Quincena, Imprevistos y Control Real 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria de obligaciones con cuotas reales (incluyendo Tarjeta de Crédito a 8 cuotas)
+# Memoria de obligaciones con cuotas reales
 if 'obligaciones' not in st.session_state:
     st.session_state.obligaciones = [
-        # Créditos / Préstamos / TC a cuotas
         {"nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2},
         {"nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7},
         {"nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0},
@@ -85,23 +94,87 @@ if 'obligaciones' not in st.session_state:
         {"nombre": "Sistecredito Vestido", "valor": 39000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         {"nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         {"nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
-        
-        # Gastos Fijos reales (servicios mensuales recurrentes)
         {"nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Parqueadero Q2", "valor": 25000.0, "tipo": "Fijo", "estado_mes": False},
     ]
 
+# Memoria para el registro de Gastos Imprevistos
+if 'imprevistos' not in st.session_state:
+    st.session_state.imprevistos = []
+
 # Sidebar de Configuración Real
 st.sidebar.header("⚙️ Tus Cuentas y Nómina")
 saldo_actual_banco = st.sidebar.number_input("Saldo Actual en Bancolombia (COP)", value=2800000.0, step=100000.0)
 nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal (Desprendible Davivienda)", value=1294007.0, step=10000.0)
 
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🚨 Agregar Gasto Imprevisto")
+with st.sidebar.form(key="form_imprevisto"):
+    nombre_imp = st.text_input("Descripción del Imprevisto")
+    valor_imp = st.number_input("Valor (COP)", min_value=0.0, step=10000.0)
+    btn_agregar_imp = st.form_submit_button("Registrar Imprevisto")
+    if btn_agregar_imp and nombre_imp and valor_imp > 0:
+        st.session_state.imprevistos.append({"nombre": nombre_imp, "valor": valor_imp})
+        st.success(f"¡Imprevisto '{nombre_imp}' agregado con éxito!")
+        st.rerun()
+
 st.markdown("---")
 
-# SECCIÓN SUPERIOR: Gráfico y Métricas de Avance Global del Mes
-st.markdown("### 📈 Progreso General de Pagos")
+# SECCIÓN: Rendimiento de Quincena Actual (Se va restando automáticamente)
+st.markdown("### 💸 Rendimiento de Quincena Actual")
+
+# Base de la quincena (puedes tomar tu nómina quincenal o tu saldo disponible de inicio de ciclo)
+presupuesto_quincena_inicial = nomina_quincenal_neta
+
+# Calcular cuánto se ha gastado/pagado en total de las obligaciones en este momento
+# (Para los créditos se cuenta el valor unitario de la cuota si se han pagado, o puedes adaptar según selecciones del mes)
+total_pagado_obligaciones_actual = sum(item["valor"] if "total" in item and item["pagadas"] > 0 else (item["valor"] if item.get("estado_mes", False) else 0) for item in st.session_state.obligaciones)
+total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos)
+
+quincena_que_queda = presupuesto_quincena_inicial - total_pagado_obligaciones_actual - total_imprevistos
+
+col_q1, col_q2, col_q3 = st.columns(3)
+with col_q1:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#7C3AED; font-size:1rem;">📥 Quincena Inicial</h4>
+        <h3 style="color:#333;">{formato_COP(presupuesto_quincena_inicial)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+with col_q2:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#E11D48; font-size:1rem;">📤 Total Pagado / Gastado</h4>
+        <h3 style="color:#333;">{formato_COP(total_pagado_obligaciones_actual + total_imprevistos)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+with col_q3:
+    color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
+    st.markdown(f"""
+    <div class="metric-card" style="border-left: 5px solid {color_queda};">
+        <h4 style="color:{color_queda}; font-size:1rem;">✨ QUEDA</h4>
+        <h3 style="color:#333;">{formato_COP(quincena_que_queda)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+
+# Listado y opción de borrar imprevistos si se equivocó
+if st.session_state.imprevistos:
+    with st.expander("📌 Ver Detalle de Gastos Imprevistos Registrados"):
+        for idx_imp, imp in enumerate(st.session_state.imprevistos):
+            c_imp1, c_imp2 = st.columns([4, 1])
+            with c_imp1:
+                st.write(f"• **{imp['nombre']}**: {formato_COP(imp['valor'])}")
+            with c_imp2:
+                if st.button("❌ Borrar", key=f"del_imp_{idx_imp}"):
+                    st.session_state.imprevistos.pop(idx_imp)
+                    st.rerun()
+
+st.markdown("---")
+
+# SECCIÓN SUPERIOR: Progreso General de Pagos Históricos
+st.markdown("### 📈 Progreso General de Obligaciones (Histórico)")
 
 total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones)
 total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("estado_mes", False) else 0) for item in st.session_state.obligaciones)
