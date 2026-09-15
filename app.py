@@ -71,26 +71,25 @@ def formato_COP(valor):
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Panel Libre de Deudas Pesadas & Control Total con Chulitos 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel con Control de Cuotas Reales (Camilo, Gas y Créditos) 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria de obligaciones mensuales y créditos
+# Memoria de obligaciones con cuotas reales
 if 'obligaciones' not in st.session_state:
     st.session_state.obligaciones = [
-        # Créditos a cuotas
-        {"nombre": "Addi Totto", "valor": 15000.0, "tipo": "Crédito", "total": 3, "pagadas": 1, "estado_mes": False},
-        {"nombre": "Addi Puntos", "valor": 110000.0, "tipo": "Crédito", "total": 3, "pagadas": 1, "estado_mes": False},
-        {"nombre": "Sistecredito Vestido", "valor": 39000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "estado_mes": False},
-        {"nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "estado_mes": False},
-        {"nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "estado_mes": False},
-        # Gastos Fijos / Servicios / Quincenales
-        {"nombre": "Cuota Camilo (Q1)", "valor": 373500.0, "tipo": "Fijo", "estado_mes": False},
-        {"nombre": "Cuota Camilo (Q2)", "valor": 373500.0, "tipo": "Fijo", "estado_mes": False},
-        {"nombre": "Gas Quincenal (Parte 1)", "valor": 390000.0, "tipo": "Servicio", "estado_mes": False},
-        {"nombre": "Gas Quincenal (Parte 2)", "valor": 390000.0, "tipo": "Servicio", "estado_mes": False},
+        # Créditos / Préstamos a cuotas
+        {"nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 3, "pagadas": 2},
+        {"nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7},
+        {"nombre": "Addi Totto", "valor": 15000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
+        {"nombre": "Addi Puntos", "valor": 110000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
+        {"nombre": "Sistecredito Vestido", "valor": 39000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
+        {"nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
+        {"nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
+        
+        # Gastos Fijos reales (servicios mensuales o pagos recurrentes sin cuotas finitas)
         {"nombre": "Tarjeta de Crédito / TC (Q1)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Tarjeta de Crédito / TC (Q2)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
-        {"nombre": "Internet Q1", "valor": 55000.0, "tipo": "Servicio", "estado_mes": False},
-        {"nombre": "Internet Q2", "valor": 77000.0, "tipo": "Servicio", "estado_mes": False},
+        {"nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "estado_mes": False},
+        {"nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Parqueadero Q2", "valor": 25000.0, "tipo": "Fijo", "estado_mes": False},
     ]
@@ -103,71 +102,83 @@ nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal (Desprendib
 st.markdown("---")
 
 # SECCIÓN SUPERIOR: Gráfico y Métricas de Avance Global del Mes
-st.markdown("### 📈 Progreso General de Pagos del Mes")
+st.markdown("### 📈 Progreso General de Pagos")
 
-total_obligaciones_mes = sum(item["valor"] for item in st.session_state.obligaciones)
-total_pagado_mes = sum(item["valor"] for item in st.session_state.obligaciones if item["estado_mes"] == True)
-porcentaje_avance_mes = int((total_pagado_mes / total_obligaciones_mes) * 100) if total_obligaciones_mes > 0 else 0
+# Calcular total basado en cuotas pendientes vs pagadas o gastos fijos
+total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones)
+total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("estado_mes", False) else 0) for item in st.session_state.obligaciones)
+porcentaje_avance_global = int((total_pagado_global / total_deuda_global) * 100) if total_deuda_global > 0 else 0
 
 col_g1, col_g2, col_g3 = st.columns(3)
 with col_g1:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#7C3AED; font-size:1rem;">💰 Total Obligaciones</h4>
-        <h3 style="color:#333;">{formato_COP(total_obligaciones_mes)}</h3>
+        <h4 style="color:#7C3AED; font-size:1rem;">💰 Total Histórico Obligaciones</h4>
+        <h3 style="color:#333;">{formato_COP(total_deuda_global)}</h3>
     </div>
     """, unsafe_allow_html=True)
 with col_g2:
     st.markdown(f"""
     <div class="metric-card">
         <h4 style="color:#10B981; font-size:1rem;">✅ Ya Pagado</h4>
-        <h3 style="color:#333;">{formato_COP(total_pagado_mes)}</h3>
+        <h3 style="color:#333;">{formato_COP(total_pagado_global)}</h3>
     </div>
     """, unsafe_allow_html=True)
 with col_g3:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#DB2777; font-size:1rem;">🚀 Avance del Mes</h4>
-        <h3 style="color:#333;">{porcentaje_avance_mes}%</h3>
+        <h4 style="color:#DB2777; font-size:1rem;">🚀 Avance Global</h4>
+        <h3 style="color:#333;">{porcentaje_avance_global}%</h3>
     </div>
     """, unsafe_allow_html=True)
 
-st.progress(porcentaje_avance_mes / 100)
+st.progress(porcentaje_avance_global / 100)
 
 st.markdown("---")
 
 # SECCIÓN PRINCIPAL: Control con Chulitos para Todo
-st.markdown("### 🎯 Control Total de Pagos (¡Marca con tu chulito lo que vayas pagando!)")
-st.write("Aquí tienes todas tus obligaciones del mes (gas, tarjeta de crédito, créditos a cuotas, servicios y Camilo) para marcar en tiempo real:")
+st.markdown("### 🎯 Control de Cuotas y Gastos Fijos (¡Marca con tu chulito lo que vayas pagando!)")
 
 for idx, item in enumerate(st.session_state.obligaciones):
     col_i1, col_i2, col_i3, col_i4 = st.columns([3, 2, 2, 2])
     
     with col_i1:
-        badge_color = "#7C3AED" if item["tipo"] == "Crédito" else ("#DB2777" if item["tipo"] == "Fijo" else "#059669")
-        st.markdown(f"**{item['nombre']}** <br><span style='color:{badge_color}; font-size:0.85rem; font-weight:bold;'>[{item['tipo']}] - {formato_COP(item['valor'])}</span>", unsafe_allow_html=True)
+        badge_color = "#7C3AED" if "Crédito" in item["tipo"] or "Servicio" in item["tipo"] else "#DB2777"
+        valor_str = formato_COP(item['valor'])
+        sub_label = f"Cuota: {valor_str}" if "total" in item else f"Valor: {valor_str}"
+        st.markdown(f"**{item['nombre']}** <br><span style='color:{badge_color}; font-size:0.85rem; font-weight:bold;'>[{item['tipo']}] - {sub_label}</span>", unsafe_allow_html=True)
     
     with col_i2:
-        if item["tipo"] == "Crédito":
-            st.markdown(f"Cuota: **{item['pagadas']} de {item['total']}**")
+        if "total" in item:
+            st.markdown(f"Progreso: **{item['pagadas']} de {item['total']}**")
         else:
-            estado_txt = "✅ Pagado" if item["estado_mes"] else "⏳ Pendiente"
+            estado_txt = "✅ Pagado" if item.get("estado_mes", False) else "⏳ Pendiente"
             st.markdown(f"Estado: **{estado_txt}**")
         
     with col_i3:
-        if not item["estado_mes"]:
-            if st.button(f"✅ Marcar Pagado", key=f"pagar_{idx}"):
-                st.session_state.obligaciones[idx]["estado_mes"] = True
-                if item["tipo"] == "Crédito" and item["pagadas"] < item["total"]:
+        if "total" in item:
+            if item["pagadas"] < item["total"]:
+                if st.button(f"✅ Pagar Cuota", key=f"pagar_{idx}"):
                     st.session_state.obligaciones[idx]["pagadas"] += 1
-                st.rerun()
+                    st.rerun()
+            else:
+                st.markdown("🎉 **¡Completado!**")
         else:
-            st.markdown("✔️ **¡Pagado!**")
+            if not item.get("estado_mes", False):
+                if st.button(f"✅ Marcar Pagado", key=f"pagar_fijo_{idx}"):
+                    st.session_state.obligaciones[idx]["estado_mes"] = True
+                    st.rerun()
+            else:
+                st.markdown("✔️ **¡Pagado!**")
                 
     with col_i4:
-        if item["estado_mes"]:
-            if st.button(f"↩️ Deshacer", key=f"deshacer_{idx}"):
-                st.session_state.obligaciones[idx]["estado_mes"] = False
-                if item["tipo"] == "Crédito" and item["pagadas"] > 0:
+        if "total" in item:
+            if item["pagadas"] > 0:
+                if st.button(f"↩️ Deshacer", key=f"deshacer_{idx}"):
                     st.session_state.obligaciones[idx]["pagadas"] -= 1
-                st.rerun()
+                    st.rerun()
+        else:
+            if item.get("estado_mes", False):
+                if st.button(f"↩️ Deshacer", key=f"deshacer_fijo_{idx}"):
+                    st.session_state.obligaciones[idx]["estado_mes"] = False
+                    st.rerun()
