@@ -71,23 +71,22 @@ def formato_COP(valor):
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Panel con Porcentajes de Avance y Saldos Pendientes 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel con Porcentajes de Avance y Control de Cuotas Reales 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria de obligaciones con cuotas reales corregidas para Camilo (6 pagos total, 2 pagados)
+# Memoria de obligaciones con cuotas reales (incluyendo Tarjeta de Crédito a 8 cuotas)
 if 'obligaciones' not in st.session_state:
     st.session_state.obligaciones = [
-        # Créditos / Préstamos a cuotas
+        # Créditos / Préstamos / TC a cuotas
         {"nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2},
         {"nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7},
+        {"nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0},
         {"nombre": "Addi Totto", "valor": 15000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
         {"nombre": "Addi Puntos", "valor": 110000.0, "tipo": "Crédito", "total": 3, "pagadas": 1},
         {"nombre": "Sistecredito Vestido", "valor": 39000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         {"nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         {"nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         
-        # Gastos Fijos reales
-        {"nombre": "Tarjeta de Crédito / TC (Q1)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
-        {"nombre": "Tarjeta de Crédito / TC (Q2)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
+        # Gastos Fijos reales (servicios mensuales recurrentes)
         {"nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "estado_mes": False},
