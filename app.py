@@ -25,19 +25,19 @@ st.markdown("""
     .header-title {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 2.8rem;
+        font-size: 2.5rem;
         background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.2rem;
     }
     
     .subtitle {
         text-align: center;
         color: #6B21A8;
         font-weight: 600;
-        margin-bottom: 2rem;
+        margin-bottom: 1.5rem;
     }
 
     .stButton>button {
@@ -56,204 +56,181 @@ st.markdown("""
     
     .metric-card {
         background-color: #FFFFFF;
-        padding: 20px;
+        padding: 15px;
         border-radius: 15px;
         box-shadow: 0 4px 12px rgba(219, 39, 119, 0.08);
         border-left: 5px solid #DB2777;
-    }
-    
-    .alert-card-danger {
-        background-color: #FEE2E2;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #EF4444;
-        color: #991B1B;
-        font-weight: bold;
-    }
-    
-    .alert-card-success {
-        background-color: #ECFDF5;
-        padding: 15px;
-        border-radius: 10px;
-        border-left: 5px solid #10B981;
-        color: #065F46;
-        font-weight: bold;
+        text-align: center;
     }
     </style>
 """, unsafe_allow_html=True)
 
+# Función para formatear en pesos colombianos ($ 1.294.007)
+def formato_COP(valor):
+    return f"$ {valor:,.0f}".replace(",", ".")
+
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Control Real con Desprendible de Nómina, Gas Actualizado & "Por Pagar" 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel Limpio, Gráfico de Avance y Chulitos de Pago 🌸💜</div>', unsafe_allow_html=True)
 
-# Memoria de créditos
+# Memoria de créditos con estado de chulitos por cuota
 if 'creditos_cuotas' not in st.session_state:
     st.session_state.creditos_cuotas = [
-        {"Crédito / Tienda": "Addi Totto", "Valor Cuota Mensual": 15000.0, "Cuotas Totales": 3, "Cuotas Pagadas": 1},
-        {"Crédito / Tienda": "Addi Puntos", "Valor Cuota Mensual": 110000.0, "Cuotas Totales": 3, "Cuotas Pagadas": 1},
-        {"Crédito / Tienda": "Sistecredito Vestido", "Valor Cuota Mensual": 39000.0, "Cuotas Totales": 4, "Cuotas Pagadas": 2},
-        {"Crédito / Tienda": "Sistecredito Sudadera", "Valor Cuota Mensual": 59000.0, "Cuotas Totales": 4, "Cuotas Pagadas": 2},
-        {"Crédito / Tienda": "Sistecredito Maleta", "Valor Cuota Mensual": 66000.0, "Cuotas Totales": 4, "Cuotas Pagadas": 2}
+        {"tienda": "Addi Totto", "valor": 15000.0, "total_cuotas": 3, "pagadas": 1},
+        {"tienda": "Addi Puntos", "valor": 110000.0, "total_cuotas": 3, "pagadas": 1},
+        {"tienda": "Sistecredito Vestido", "valor": 39000.0, "total_cuotas": 4, "pagadas": 2},
+        {"tienda": "Sistecredito Sudadera", "valor": 59000.0, "total_cuotas": 4, "pagadas": 2},
+        {"tienda": "Sistecredito Maleta", "valor": 66000.0, "total_cuotas": 4, "pagadas": 2}
     ]
 
 # Sidebar de Configuración Real
-st.sidebar.header("⚙️ Tus Cuentas y Nómina Real")
+st.sidebar.header("⚙️ Tus Cuentas y Nómina")
 saldo_actual_banco = st.sidebar.number_input("Saldo Actual en Bancolombia (COP)", value=2800000.0, step=100000.0)
-
-# Ingreso neto real según tu desprendible de pago
 nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal (Desprendible Davivienda)", value=1294007.0, step=10000.0)
 
-st.sidebar.subheader("🔥 Servicio de Gas (Actualizado)")
+st.sidebar.subheader("🔥 Servicio de Gas")
 gas_mensual = st.sidebar.number_input("Recibo de Gas Total Mensual", value=780000.0, step=10000.0)
-gas_quincenal = gas_mensual / 2  # $390.000 por quincena
+gas_quincenal = gas_mensual / 2  # $ 390.000 por quincena
 
 st.sidebar.subheader("📌 Gastos Fijos por Quincena")
 camilo_q = st.sidebar.number_input("Cuota Camilo (Cada Quincena)", value=373500.0, step=10000.0)
 tc_q = st.sidebar.number_input("Tarjeta de Crédito / TC (Cada Quincena)", value=160000.0, step=10000.0)
 gastos_libres_q = st.sidebar.number_input("Gastos Libres (Cada Quincena)", value=100000.0, step=10000.0)
 
-st.sidebar.subheader("📉 Deudas Principales 'Por Pagar'")
+st.sidebar.subheader("📉 Deudas Principales")
 deuda_negro = st.sidebar.number_input("Deuda Negro (Total)", value=1600000.0, step=50000.0)
 rapicredid = st.sidebar.number_input("Rapicredid (Total)", value=350000.0, step=10000.0)
 
 st.markdown("---")
 
-# SECCIÓN 1: Gestión de Cuotas (Addi / Sistecredito)
-st.markdown("### 🛍️ Progreso de Créditos a Cuotas (Addi / Sistecredito)")
+# SECCIÓN SUPERIOR: Gráfico y Métricas de Avance de Créditos
+st.markdown("### 📈 Progreso General de Tus Créditos")
 
-with st.expander("➕ Administrar o ver cuotas pendientes", expanded=False):
-    col_c1, col_c2, col_c3, col_c4 = st.columns([2, 1, 1, 1])
-    with col_c1:
-        nombre_credito = st.text_input("Nombre (Ej: Addi Totto...)", placeholder="Tienda")
-    with col_c2:
-        valor_cuota = st.number_input("Valor Cuota", value=0.0, step=10000.0)
-    with col_c3:
-        cuotas_tot = st.number_input("Total Cuotas", value=3, min_value=1, step=1)
-    with col_c4:
-        cuotas_pag = st.number_input("Pagadas", value=0, min_value=0, step=1)
-    
-    if st.button("Guardar Crédito"):
-        if nombre_credito and valor_cuota > 0:
-            st.session_state.creditos_cuotas.append({
-                "Crédito / Tienda": nombre_credito,
-                "Valor Cuota Mensual": valor_cuota,
-                "Cuotas Totales": int(cuotas_tot),
-                "Cuotas Pagadas": int(cuotas_pag)
-            })
-            st.success("¡Agregado!")
-            st.rerun()
+total_deuda_inicial = sum(item["valor"] * item["total_cuotas"] for item in st.session_state.creditos_cuotas)
+total_pagado_hasta_hoy = sum(item["valor"] * item["pagadas"] for item in st.session_state.creditos_cuotas)
+porcentaje_avance_global = int((total_pagado_hasta_hoy / total_deuda_inicial) * 100) if total_deuda_inicial > 0 else 0
 
-datos_tabla_creditos = []
-for item in st.session_state.creditos_cuotas:
-    pendientes = item["Cuotas Totales"] - item["Cuotas Pagadas"]
-    deuda_restante = pendientes * item["Valor Cuota Mensual"]
-    progreso_pct = int((item["Cuotas Pagadas"] / item["Cuotas Totales"]) * 100) if item["Cuotas Totales"] > 0 else 100
-    
-    datos_tabla_creditos.append({
-        "Crédito / Tienda": item["Crédito / Tienda"],
-        "Cuota Mensual": item["Valor Cuota Mensual"],
-        "Pagadas": f"{item['Cuotas Pagadas']} de {item['Cuotas Totales']}",
-        "Faltantes": pendientes,
-        "Deuda Restante": deuda_restante,
-        "Avance": f"{progreso_pct}%"
-    })
+col_g1, col_g2, col_g3 = st.columns(3)
+with col_g1:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#7C3AED; font-size:1rem;">💰 Total Deuda Créditos</h4>
+        <h3 style="color:#333;">{formato_COP(total_deuda_inicial)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+with col_g2:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#10B981; font-size:1rem;">✅ Ya Pagado</h4>
+        <h3 style="color:#333;">{formato_COP(total_pagado_hasta_hoy)}</h3>
+    </div>
+    """, unsafe_allow_html=True)
+with col_g3:
+    st.markdown(f"""
+    <div class="metric-card">
+        <h4 style="color:#DB2777; font-size:1rem;">🚀 Avance Total</h4>
+        <h3 style="color:#333;">{porcentaje_avance_global}%</h3>
+    </div>
+    """, unsafe_allow_html=True)
 
-df_creditos_view = pd.DataFrame(datos_tabla_creditos)
-st.dataframe(df_creditos_view, use_container_width=True)
-
-if st.button("🗑️ Borrar lista de créditos"):
-    st.session_state.creditos_cuotas = []
-    st.rerun()
+st.progress(porcentaje_avance_global / 100)
 
 st.markdown("---")
 
-# SECCIÓN 2: Desglose Real por Quincena
-st.markdown("### 📊 Desglose de Gastos por Quincena (Real)")
+# SECCIÓN 1: Control con Chulitos de Pago (Addi / Sistecredito)
+st.markdown("### 🛍️ Control de Cuotas con Chulitos (¡Marca cuando pagues!)")
+st.write("Selecciona el chulito en la cuota que vayas pagando para actualizar automáticamente tu saldo y avance:")
+
+for idx, item in enumerate(st.session_state.creditos_cuotas):
+    col_i1, col_i2, col_i3, col_i4 = st.columns([3, 2, 2, 2])
+    
+    with col_i1:
+        st.markdown(f"**{item['tienda']}** <br><span style='color:gray; font-size:0.85rem;'>Cuota: {formato_COP(item['valor'])}</span>", unsafe_allow_html=True)
+    
+    with col_i2:
+        st.markdown(f"Progreso: **{item['pagadas']} de {item['total_cuotas']}**")
+        
+    with col_i3:
+        # Botón para sumar cuota con chulito
+        if st.button(f"✅ Pagar Cuota", key=f"pagar_{idx}"):
+            if item['pagadas'] < item['total_cuotas']:
+                st.session_state.creditos_cuotas[idx]['pagadas'] += 1
+                st.rerun()
+                
+    with col_i4:
+        # Botón para desmarcar si se equivocó
+        if st.button(f"↩️ Deshacer", key=f"deshacer_{idx}"):
+            if item['pagadas'] > 0:
+                st.session_state.creditos_cuotas[idx]['pagadas'] -= 1
+                st.rerun()
+
+st.markdown("---")
+
+# SECCIÓN 2: Desglose Limpio por Quincena
+st.markdown("### 📊 Desglose Limpio de Gastos por Quincena")
 
 col_q1, col_q2 = st.columns(2)
 
-# Quincena 1 (Mitad de mes)
+# Quincena 1
 with col_q1:
     st.markdown("#### 🗓️ Quincena 15 (Mitad de Mes)")
     internet_q1 = 55000.0
     parqueadero_q1 = 25000.0
-    sistecredito_total_q1 = 39000.0 + 59000.0 + 66000.0  # Vestido + Sudadera + Maleta
+    sistecredito_activo_q1 = sum(item["valor"] for item in st.session_state.creditos_cuotas if "Sistecredito" in item["tienda"] and item["pagadas"] < item["total_cuotas"])
     
-    total_gastos_q1 = camilo_q + tc_q + gas_quincenal + internet_q1 + parqueadero_q1 + sistecredito_total_q1 + gastos_libres_q
+    total_gastos_q1 = camilo_q + tc_q + gas_quincenal + internet_q1 + parqueadero_q1 + sistecredito_activo_q1 + gastos_libres_q
     
-    st.write(f"- Camilo: $ {camilo_q:,.0f}")
-    st.write(f"- TC: $ {tc_q:,.0f}")
-    st.write(f"- Gas (Actualizado): $ {gas_quincenal:,.0f}")
-    st.write(f"- Internet: $ {internet_q1:,.0f}")
-    st.write(f"- Parqueadero: $ {parqueadero_q1:,.0f}")
-    st.write(f"- Sistecreditos: $ {sistecredito_total_q1:,.0f}")
-    st.write(f"- Gastos Libres: $ {gastos_libres_q:,.0f}")
-    st.markdown(f"**Total Gastos Q15: 🔴 $ {total_gastos_q1:,.0f} COP**")
+    st.text(f"• Camilo: {formato_COP(camilo_q)}")
+    st.text(f"• Tarjeta de Crédito (TC): {formato_COP(tc_q)}")
+    st.text(f"• Gas (Actualizado): {formato_COP(gas_quincenal)}")
+    st.text(f"• Internet: {formato_COP(internet_q1)}")
+    st.text(f"• Parqueadero: {formato_COP(parqueadero_q1)}")
+    st.text(f"• Sistecreditos Activos: {formato_COP(sistecredito_activo_q1)}")
+    st.text(f"• Gastos Libres: {formato_COP(gastos_libres_q)}")
+    st.markdown(f"**Total Salidas Q15:** 🔴 **{formato_COP(total_gastos_q1)}**")
     
     saldo_tras_q1 = saldo_actual_banco - total_gastos_q1
-    st.markdown(f"**Saldo Disponible Post-Gastos Q1:** $ {saldo_tras_q1:,.0f} COP")
+    st.markdown(f"**Saldo Disponible:** 🟢 **{formato_COP(saldo_tras_q1)}**")
 
-# Quincena Fin de Mes (Incluye tu nómina real de $1.294.007)
+# Quincena Fin de Mes
 with col_q2:
-    st.markdown("#### 🗓️ Quincena Fin de Mes")
+    st.markdown("#### 🗓️ Quincena Fin de Mes (Día 20)")
     internet_q_fin = 77000.0
     parqueadero_q_fin = 25000.0
-    addi_total_qfin = 110000.0 + 15000.0  # Addi Puntos + Addi Totto
+    addi_activo_qfin = sum(item["valor"] for item in st.session_state.creditos_cuotas if "Addi" in item["tienda"] and item["pagadas"] < item["total_cuotas"])
     
-    total_gastos_qfin = camilo_q + tc_q + gas_quincenal + internet_q_fin + parqueadero_q_fin + addi_total_qfin + gastos_libres_q
+    total_gastos_qfin = camilo_q + tc_q + gas_quincenal + internet_q_fin + parqueadero_q_fin + addi_activo_qfin + gastos_libres_q
     
-    st.write(f"- Camilo: $ {camilo_q:,.0f}")
-    st.write(f"- TC: $ {tc_q:,.0f}")
-    st.write(f"- Gas (Actualizado): $ {gas_quincenal:,.0f}")
-    st.write(f"- Internet: $ {internet_q_fin:,.0f}")
-    st.write(f"- Parqueadero: $ {parqueadero_q_fin:,.0f}")
-    st.write(f"- Addis: $ {addi_total_qfin:,.0f}")
-    st.write(f"- Gastos Libres: $ {gastos_libres_q:,.0f}")
-    st.markdown(f"**Total Gastos Fin de Mes: 🔴 $ {total_gastos_qfin:,.0f} COP**")
+    st.text(f"• Camilo: {formato_COP(camilo_q)}")
+    st.text(f"• Tarjeta de Crédito (TC): {formato_COP(tc_q)}")
+    st.text(f"• Gas (Actualizado): {formato_COP(gas_quincenal)}")
+    st.text(f"• Internet: {formato_COP(internet_q_fin)}")
+    st.text(f"• Parqueadero: {formato_COP(parqueadero_q_fin)}")
+    st.text(f"• Addis Activas: {formato_COP(addi_activo_qfin)}")
+    st.text(f"• Gastos Libres: {formato_COP(gastos_libres_q)}")
+    st.markdown(f"**Total Salidas Fin de Mes:** 🔴 **{formato_COP(total_gastos_qfin)}**")
     
-    # Aquí sumamos la nómina neta real del desprendible
     saldo_tras_nomina_real = saldo_tras_q1 + nomina_quincenal_neta
     balance_final_mes = saldo_tras_nomina_real - total_gastos_qfin
-    st.markdown(f"**Saldo Tras Nómina Día 20 (Neta Real):** $ {saldo_tras_nomina_real:,.0f} COP")
+    st.markdown(f"**Ingreso Nómina Neta Real:** 🟢 **{formato_COP(nomina_quincenal_neta)}**")
+    st.markdown(f"**Balance Final del Mes:** ✨ **{formato_COP(balance_final_mes)}**")
 
 st.markdown("---")
 
-# Tarjetas de Métricas Clave
-col_m1, col_m2 = st.columns(2)
-with col_m1:
+# Resumen de Deudas Principales "Por Pagar"
+st.markdown("### 🚨 Obligaciones Mayores 'Por Pagar'")
+col_p1, col_p2 = st.columns(2)
+with col_p1:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#7C3AED;">💳 Saldo Tras Quincena 15</h4>
-        <h2>$ {saldo_tras_q1:,.0f} COP</h2>
+        <h4 style="color:#7C3AED; font-size:1rem;">Deuda con Negro</h4>
+        <h3 style="color:#333;">{formato_COP(deuda_negro)}</h3>
     </div>
     """, unsafe_allow_html=True)
-with col_m2:
+with col_p2:
     st.markdown(f"""
     <div class="metric-card">
-        <h4 style="color:#DB2777;">✨ Balance Final del Mes (Real)</h4>
-        <h2>$ {balance_final_mes:,.0f} COP</h2>
-    </div>
-    """, unsafe_allow_html=True)
-
-# Sección de Obligaciones "Por Pagar"
-st.markdown("### 🚨 Resumen de Obligaciones 'Por Pagar'")
-tabla_por_pagar = [
-    {"Obligación": "Deuda Negro", "Monto Total": deuda_negro, "Estado": "Por Pagar (Aparte)"},
-    {"Obligación": "Rapicredid", "Monto Total": rapicredid, "Estado": "Pendiente de Cierre"},
-    {"Obligación": "Total Cuotas Activas (Addi/Sistecredito)", "Monto Total": sum(item["Valor Cuota Mensual"] for item in st.session_state.creditos_cuotas), "Estado": "En Curso Mes"}
-]
-df_por_pagar = pd.DataFrame(tabla_por_pagar)
-st.dataframe(df_por_pagar, use_container_width=True)
-
-if balance_final_mes < 0:
-    st.markdown(f"""
-    <div class="alert-card-danger">
-        ⚠️ <b>Alerta de Déficit Real:</b> Al restar los gastos fijos, el gas actualizado y sumar tu nómina neta real de <b>$ {nomina_quincenal_neta:,.0f} COP</b>, el mes presenta un faltante de <b>$ {abs(balance_final_mes):,.0f} COP</b> sin contar todavía las deudas con Negro o Rapicredid. ¡Hay que vigilarlo con lupa!
-    </div>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown(f"""
-    <div class="alert-card-success">
-        ✅ <b>Balance del Mes:</b> Tu nómina neta de <b>$ {nomina_quincenal_neta:,.0f} COP</b> cubre los gastos operativos del mes dejando un remanente de <b>$ {balance_final_mes:,.0f} COP</b> para destinar a tus deudas pendientes ("Por Pagar").
+        <h4 style="color:#DB2777; font-size:1rem;">Rapicredid</h4>
+        <h3 style="color:#333;">{formato_COP(rapicredid)}</h3>
     </div>
     """, unsafe_allow_html=True)
