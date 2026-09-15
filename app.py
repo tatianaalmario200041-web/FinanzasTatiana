@@ -71,7 +71,7 @@ def formato_COP(valor):
 
 # Título y subtítulo
 st.markdown('<div class="header-title">✨ Finanzas Tatiana ✨</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">Panel con Control de Cuotas Reales (Camilo, Gas y Créditos) 🌸💜</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Panel con Porcentajes de Avance y Saldos Pendientes 🌸💜</div>', unsafe_allow_html=True)
 
 # Memoria de obligaciones con cuotas reales
 if 'obligaciones' not in st.session_state:
@@ -85,7 +85,7 @@ if 'obligaciones' not in st.session_state:
         {"nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         {"nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2},
         
-        # Gastos Fijos reales (servicios mensuales o pagos recurrentes sin cuotas finitas)
+        # Gastos Fijos reales
         {"nombre": "Tarjeta de Crédito / TC (Q1)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Tarjeta de Crédito / TC (Q2)", "valor": 160000.0, "tipo": "Fijo", "estado_mes": False},
         {"nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "estado_mes": False},
@@ -104,7 +104,6 @@ st.markdown("---")
 # SECCIÓN SUPERIOR: Gráfico y Métricas de Avance Global del Mes
 st.markdown("### 📈 Progreso General de Pagos")
 
-# Calcular total basado en cuotas pendientes vs pagadas o gastos fijos
 total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones)
 total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("estado_mes", False) else 0) for item in st.session_state.obligaciones)
 porcentaje_avance_global = int((total_pagado_global / total_deuda_global) * 100) if total_deuda_global > 0 else 0
@@ -136,8 +135,8 @@ st.progress(porcentaje_avance_global / 100)
 
 st.markdown("---")
 
-# SECCIÓN PRINCIPAL: Control con Chulitos para Todo
-st.markdown("### 🎯 Control de Cuotas y Gastos Fijos (¡Marca con tu chulito lo que vayas pagando!)")
+# SECCIÓN PRINCIPAL: Control con Chulitos, Porcentaje y Saldo Pendiente
+st.markdown("### 🎯 Control de Cuotas y Motivación (¡Mira tu saldo pendiente y % de avance!)")
 
 for idx, item in enumerate(st.session_state.obligaciones):
     col_i1, col_i2, col_i3, col_i4 = st.columns([3, 2, 2, 2])
@@ -150,10 +149,13 @@ for idx, item in enumerate(st.session_state.obligaciones):
     
     with col_i2:
         if "total" in item:
-            st.markdown(f"Progreso: **{item['pagadas']} de {item['total']}**")
+            porcentaje_item = int((item["pagadas"] / item["total"]) * 100)
+            saldo_pendiente = item["valor"] * (item["total"] - item["pagadas"])
+            st.markdown(f"Progreso: **{item['pagadas']} de {item['total']} ({porcentaje_item}%)**<br><span style='color:#E11D48; font-size:0.85rem;'>Pendiente: {formato_COP(saldo_pendiente)}</span>", unsafe_allow_html=True)
         else:
             estado_txt = "✅ Pagado" if item.get("estado_mes", False) else "⏳ Pendiente"
-            st.markdown(f"Estado: **{estado_txt}**")
+            saldo_fijo = 0 if item.get("estado_mes", False) else item["valor"]
+            st.markdown(f"Estado: **{estado_txt}**<br><span style='color:#E11D48; font-size:0.85rem;'>Pendiente: {formato_COP(saldo_fijo)}</span>", unsafe_allow_html=True)
         
     with col_i3:
         if "total" in item:
