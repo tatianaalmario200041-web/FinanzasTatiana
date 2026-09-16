@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS KiuT mejorados: barras de progreso rosadas/moradas con porcentaje y tarjetas divinas
+# Estilos CSS KiuT mejorados y limpios (con barras de progreso personalizadas rosadas)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -85,10 +85,21 @@ st.markdown("""
         margin-bottom: 20px;
     }
 
-    /* Forzar que las barras de progreso de Streamlit tengan nuestro gradiente CyberPink */
-    div[data-testid="stProgress"] > div > div > div > div {
-        background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%) !important;
-        border-radius: 10px;
+    /* Barra de progreso personalizada KiuT (Rosada/Morada) */
+    .progress-container {
+        width: 100%;
+        background-color: #FCE7F3;
+        border-radius: 12px;
+        height: 16px;
+        margin: 8px 0;
+        overflow: hidden;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.06);
+    }
+    .progress-bar-kiut {
+        height: 100%;
+        background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+        border-radius: 12px;
+        transition: width 0.4s ease;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -223,11 +234,15 @@ total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligacione
 porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
 
 st.markdown(f"#### 🌸 Progreso General del Periodo: **{porcentaje_periodo}% Pagado** ({formato_COP(total_pagado_obligaciones_actual)} de {formato_COP(total_deuda_periodo)})")
-st.progress(porcentaje_periodo / 100)
+st.markdown(f'''
+    <div class="progress-container">
+        <div class="progress-bar-kiut" style="width: {porcentaje_periodo}%;"></div>
+    </div>
+''', unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT LIMPIAS Y BARRA ROSADA ADENTRO ---
+# --- 5. CONTROL DE PAGOS CON BARRA ROSADA Y PORCENTAJE EN TEXTO ---
 st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
@@ -237,7 +252,6 @@ for item in st.session_state.obligaciones_base:
     item_id = item["id"]
     esta_pagado = pagos_actuales.get(item_id, False)
     
-    # Tarjeta KiuT limpia sin bordes raros arriba
     st.markdown(f'<div class="kiut-card">', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([3, 2, 1])
     
@@ -251,12 +265,22 @@ for item in st.session_state.obligaciones_base:
             pct = int((item["pagadas"] / item["total"]) * 100) if item["total"] > 0 else 100
             pend = item["valor"] * max(0, (item["total"] - item["pagadas"]))
             st.markdown(f"<span style='font-size: 1.05rem;'>Progreso: <b>{item['pagadas']} de {item['total']} ({pct}%)</b></span>", unsafe_allow_html=True)
-            st.progress(pct / 100)  # Barra de progreso rosadita/morada adentro de la tarjeta
+            # Barra de progreso KiuT personalizada con HTML (relleno rosado/morado)
+            st.markdown(f'''
+                <div class="progress-container">
+                    <div class="progress-bar-kiut" style="width: {pct}%;"></div>
+                </div>
+            ''', unsafe_allow_html=True)
             st.markdown(f"<span style='color:#E11D48; font-size:0.95rem;'>Faltante total: <b>{formato_COP(pend)}</b></span>", unsafe_allow_html=True)
         else:
-            estado_txt = "🌸 <b>Pagado</b>" if esta_pagado else "⏳ <b>Pendiente</b>"
+            estado_txt = "🌸 <b>Pagado (100%)</b>" if esta_pagado else "⏳ <b>Pendiente (0%)</b>"
+            pct_fijo = 100 if esta_pagado else 0
             st.markdown(f"<span style='font-size: 1.05rem;'>Estado: {estado_txt}</span>", unsafe_allow_html=True)
-            st.progress(1.0 if esta_pagado else 0.0)
+            st.markdown(f'''
+                <div class="progress-container">
+                    <div class="progress-bar-kiut" style="width: {pct_fijo}%;"></div>
+                </div>
+            ''', unsafe_allow_html=True)
             
     with c3:
         st.markdown("<br>", unsafe_allow_html=True)
