@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS con tipografía grande, limpia y eliminación de cualquier línea o paréntesis extraño
+# Estilos CSS con tipografía grande, limpia y tarjetas divinas
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -188,7 +188,7 @@ with st.sidebar.form(key="form_imprevisto_side"):
         st.rerun()
 
 
-# --- 4. RENDIMIENTO Y GRÁFICO VERTICAL MÁS PEQUEÑO ---
+# --- 4. RENDIMIENTO Y BARRA DE PROGRESO GENERAL DEL PERIODO ---
 st.markdown(f"### 💸 Rendimiento Financiero: {clave_periodo_actual}")
 
 col_config1, col_config2 = st.columns(2)
@@ -213,15 +213,13 @@ with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
     st.markdown(f'<div class="metric-card" style="border: 2px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1.05rem;">✨ QUEDA</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</h3></div>', unsafe_allow_html=True)
 
-# Gráfico rosita vertical y compacto
+# Barra de Progreso General del Periodo (Reemplaza el gráfico ancho)
 st.markdown("<br>", unsafe_allow_html=True)
-st.markdown("#### 🌸 Progreso Visual del Periodo (Deuda vs Pagado)")
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
-df_chart = pd.DataFrame({
-    "Categoría": ["Ya Pagado 🌸", "Pendiente ⏳"],
-    "Valor": [total_pagado_obligaciones_actual, max(0, total_deuda_periodo - total_pagado_obligaciones_actual)]
-})
-st.bar_chart(df_chart.set_index("Categoría"), color="#EC4899", height=140)
+porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
+
+st.markdown(f"#### 🌸 Progreso General del Periodo: **{porcentaje_periodo}% Pagado** ({formato_COP(total_pagado_obligaciones_actual)} de {formato_COP(total_deuda_periodo)})")
+st.progress(porcentaje_periodo / 100)
 
 st.markdown("---")
 
