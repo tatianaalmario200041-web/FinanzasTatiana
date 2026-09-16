@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS Ultra KiuT limpios y profesionales (Corrigiendo bordes y barras)
+# Estilos CSS KiuT mejorados: barras de progreso rosadas/moradas con porcentaje y tarjetas divinas
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -84,9 +84,9 @@ st.markdown("""
         box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
         margin-bottom: 20px;
     }
-    
-    /* Personalizar barra de progreso para que sea rosadita/morada */
-    stProgress > div > div > div > div {
+
+    /* Forzar que las barras de progreso de Streamlit tengan nuestro gradiente CyberPink */
+    div[data-testid="stProgress"] > div > div > div > div {
         background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%) !important;
         border-radius: 10px;
     }
@@ -227,7 +227,7 @@ st.progress(porcentaje_periodo / 100)
 
 st.markdown("---")
 
-# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT LIMPIAS ---
+# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT LIMPIAS Y BARRA ROSADA ADENTRO ---
 st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
@@ -237,7 +237,7 @@ for item in st.session_state.obligaciones_base:
     item_id = item["id"]
     esta_pagado = pagos_actuales.get(item_id, False)
     
-    # Abrir contenedor tarjeta KiuT limpia
+    # Tarjeta KiuT limpia sin bordes raros arriba
     st.markdown(f'<div class="kiut-card">', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([3, 2, 1])
     
@@ -251,7 +251,7 @@ for item in st.session_state.obligaciones_base:
             pct = int((item["pagadas"] / item["total"]) * 100) if item["total"] > 0 else 100
             pend = item["valor"] * max(0, (item["total"] - item["pagadas"]))
             st.markdown(f"<span style='font-size: 1.05rem;'>Progreso: <b>{item['pagadas']} de {item['total']} ({pct}%)</b></span>", unsafe_allow_html=True)
-            st.progress(pct / 100)
+            st.progress(pct / 100)  # Barra de progreso rosadita/morada adentro de la tarjeta
             st.markdown(f"<span style='color:#E11D48; font-size:0.95rem;'>Faltante total: <b>{formato_COP(pend)}</b></span>", unsafe_allow_html=True)
         else:
             estado_txt = "🌸 <b>Pagado</b>" if esta_pagado else "⏳ <b>Pendiente</b>"
