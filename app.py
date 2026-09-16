@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS KiuT mejorados y limpios (con barras de progreso personalizadas rosadas)
+# Estilos CSS KiuT optimizados: Tarjetas hermosas y panel superior fijo
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -26,29 +26,29 @@ st.markdown("""
     .header-title {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 3.2rem;
+        font-size: 3rem;
         background: linear-gradient(135deg, #9333EA 0%, #DB2777 50%, #F43F5E 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
-        padding-bottom: 0.2rem;
+        padding-bottom: 0.1rem;
     }
     
     .subtitle {
         text-align: center;
         color: #831843;
         font-weight: 600;
-        font-size: 1.3rem;
-        margin-bottom: 2rem;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
     }
 
     .stButton>button {
         background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
         color: white;
         border-radius: 14px;
-        padding: 0.6rem 1.4rem;
+        padding: 0.5rem 1.2rem;
         font-weight: 700;
-        font-size: 1.05rem;
+        font-size: 1rem;
         border: none;
         box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
     }
@@ -60,29 +60,29 @@ st.markdown("""
     
     .metric-card {
         background-color: #FFFFFF;
-        padding: 18px;
-        border-radius: 18px;
-        box-shadow: 0 6px 16px rgba(219, 39, 119, 0.1);
+        padding: 15px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(219, 39, 119, 0.1);
         border: 2px solid #F472B6;
         text-align: center;
     }
     
     .period-box {
         background: linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 100%);
-        padding: 25px;
-        border-radius: 20px;
+        padding: 20px;
+        border-radius: 18px;
         border: 3px dashed #EC4899;
-        box-shadow: 0 4px 15px rgba(168, 85, 247, 0.15);
-        margin-bottom: 25px;
+        box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+        margin-bottom: 20px;
     }
     
     .kiut-card {
         background-color: #FFFFFF;
-        padding: 24px;
-        border-radius: 20px;
+        padding: 22px;
+        border-radius: 18px;
         border: 2px solid #FBCFE8;
         box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
 
     /* Barra de progreso personalizada KiuT (Rosada/Morada) */
@@ -100,6 +100,18 @@ st.markdown("""
         background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
         border-radius: 12px;
         transition: width 0.4s ease;
+    }
+
+    /* Panel Superior Fijo (Sticky) para que siempre esté arriba */
+    .sticky-summary {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background: rgba(253, 244, 255, 0.95);
+        backdrop-filter: blur(10px);
+        padding: 15px 10px;
+        border-bottom: 2px solid #FBCFE8;
+        margin-bottom: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -204,7 +216,8 @@ with st.sidebar.form(key="form_imprevisto_side"):
         st.rerun()
 
 
-# --- 4. RENDIMIENTO Y BARRA GENERAL ---
+# --- 4. PANEL SUPERIOR FIJO (STICKY) DE RENDIMIENTO ---
+st.markdown('<div class="sticky-summary">', unsafe_allow_html=True)
 st.markdown(f"### 💸 Rendimiento Financiero: {clave_periodo_actual}")
 
 col_config1, col_config2 = st.columns(2)
@@ -220,14 +233,14 @@ quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pag
 
 col_q1, col_q2, col_q3, col_q4 = st.columns(4)
 with col_q1:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#9333EA; font-size:1.05rem;">📥 Ingresos</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><h4 style="color:#9333EA; font-size:0.95rem;">📥 Ingresos</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h3></div>', unsafe_allow_html=True)
 with col_q2:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#DB2777; font-size:1.05rem;">📤 Pagado</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(total_pagado_obligaciones_actual)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><h4 style="color:#DB2777; font-size:0.95rem;">📤 Pagado</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(total_pagado_obligaciones_actual)}</h3></div>', unsafe_allow_html=True)
 with col_q3:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#D97706; font-size:1.05rem;">🚨 Imprevistos</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(total_imprevistos)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card"><h4 style="color:#D97706; font-size:0.95rem;">🚨 Imprevistos</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(total_imprevistos)}</h3></div>', unsafe_allow_html=True)
 with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
-    st.markdown(f'<div class="metric-card" style="border: 2px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1.05rem;">✨ QUEDA</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card" style="border: 2px solid {color_queda};"><h4 style="color:{color_queda}; font-size:0.95rem;">✨ QUEDA</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(quincena_que_queda)}</h3></div>', unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
@@ -239,10 +252,11 @@ st.markdown(f'''
         <div class="progress-bar-kiut" style="width: {porcentaje_periodo}%;"></div>
     </div>
 ''', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("---")
 
-# --- 5. CONTROL DE PAGOS CON BARRA ROSADA Y PORCENTAJE EN TEXTO ---
+# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT IDÉNTICAS ---
 st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
@@ -265,7 +279,6 @@ for item in st.session_state.obligaciones_base:
             pct = int((item["pagadas"] / item["total"]) * 100) if item["total"] > 0 else 100
             pend = item["valor"] * max(0, (item["total"] - item["pagadas"]))
             st.markdown(f"<span style='font-size: 1.05rem;'>Progreso: <b>{item['pagadas']} de {item['total']} ({pct}%)</b></span>", unsafe_allow_html=True)
-            # Barra de progreso KiuT personalizada con HTML (relleno rosado/morado)
             st.markdown(f'''
                 <div class="progress-container">
                     <div class="progress-bar-kiut" style="width: {pct}%;"></div>
@@ -301,12 +314,12 @@ for item in st.session_state.obligaciones_base:
 
 st.markdown("---")
 
-# --- 6. GESTIÓN DE NUEVAS DEUDAS Y PRÉSTAMOS ---
+# --- 6. GESTIÓN DE NUEVAS DEUDAS (PLANTILLA IDÉNTICA) Y PRÉSTAMOS ---
 st.markdown("### 📋 Gestión de Nuevas Deudas y Cuentas por Cobrar")
 tab_deudas, tab_prestamos = st.tabs(["💸 Registrar / Ver Nuevas Deudas", "🤝 Dinero que Te Deben"])
 
 with tab_deudas:
-    st.markdown("#### Agrega un nuevo crédito o cuota que te haya salido:")
+    st.markdown("#### Agrega un nuevo crédito o cuota que te haya salido (¡Se creará exactamente igual de hermosa que las demás!):")
     with st.form(key="form_nueva_deuda_main"):
         col_nd1, col_nd2 = st.columns(2)
         with col_nd1:
@@ -325,13 +338,13 @@ with tab_deudas:
                 "id": nuevo_id,
                 "nombre": n_nombre,
                 "valor": n_valor_cuota,
-                "tipo": "Deuda Nueva",
+                "tipo": "Crédito Nuevo",
                 "total": int(n_total_cuotas),
                 "pagadas": 0,
                 "periodo": n_periodo,
                 "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir"
             })
-            st.success(f"¡Deuda '{n_nombre}' guardada con éxito!")
+            st.success(f"¡Deuda '{n_nombre}' guardada con éxito! Ya aparece en tu lista con el mismo diseño KiuT.")
             st.rerun()
 
 with tab_prestamos:
