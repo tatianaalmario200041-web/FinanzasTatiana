@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS con tipografía grande, limpia y tarjetas divinas
+# Estilos CSS Ultra KiuT limpios y profesionales (Corrigiendo bordes y barras)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -76,14 +76,19 @@ st.markdown("""
         margin-bottom: 25px;
     }
     
-    .card-item {
+    .kiut-card {
         background-color: #FFFFFF;
-        padding: 22px 26px;
-        border-radius: 18px;
+        padding: 24px;
+        border-radius: 20px;
         border: 2px solid #FBCFE8;
-        border-left: 8px solid #EC4899;
-        box-shadow: 0 4px 14px rgba(219, 39, 119, 0.08);
+        box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
         margin-bottom: 20px;
+    }
+    
+    /* Personalizar barra de progreso para que sea rosadita/morada */
+    stProgress > div > div > div > div {
+        background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%) !important;
+        border-radius: 10px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -188,7 +193,7 @@ with st.sidebar.form(key="form_imprevisto_side"):
         st.rerun()
 
 
-# --- 4. RENDIMIENTO Y BARRA DE PROGRESO GENERAL DEL PERIODO ---
+# --- 4. RENDIMIENTO Y BARRA GENERAL ---
 st.markdown(f"### 💸 Rendimiento Financiero: {clave_periodo_actual}")
 
 col_config1, col_config2 = st.columns(2)
@@ -213,7 +218,6 @@ with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
     st.markdown(f'<div class="metric-card" style="border: 2px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1.05rem;">✨ QUEDA</h4><h3 style="color:#333; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</h3></div>', unsafe_allow_html=True)
 
-# Barra de Progreso General del Periodo (Reemplaza el gráfico ancho)
 st.markdown("<br>", unsafe_allow_html=True)
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
 porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
@@ -223,7 +227,7 @@ st.progress(porcentaje_periodo / 100)
 
 st.markdown("---")
 
-# --- 5. CONTROL DE PAGOS CON BARRAS DE PROGRESO Y LETRA GRANDE ---
+# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT LIMPIAS ---
 st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
@@ -233,7 +237,8 @@ for item in st.session_state.obligaciones_base:
     item_id = item["id"]
     esta_pagado = pagos_actuales.get(item_id, False)
     
-    st.markdown(f'<div class="card-item">', unsafe_allow_html=True)
+    # Abrir contenedor tarjeta KiuT limpia
+    st.markdown(f'<div class="kiut-card">', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([3, 2, 1])
     
     with c1:
@@ -330,7 +335,7 @@ with tab_prestamos:
     st.markdown("#### 🔍 Listado de Dinero que Te Deben:")
     if st.session_state.prestamos_por_cobrar:
         for idx_p, prestamo in enumerate(st.session_state.prestamos_por_cobrar):
-            st.markdown(f'<div class="card-item" style="border-left-color: #9333EA;">', unsafe_allow_html=True)
+            st.markdown(f'<div class="kiut-card">', unsafe_allow_html=True)
             cp1, cp2, cp3 = st.columns([3, 3, 1])
             with cp1:
                 st.markdown(f"👤 **Deudor:** <span style='font-size:1.1rem;'>{prestamo['deudor']}</span>", unsafe_allow_html=True)
