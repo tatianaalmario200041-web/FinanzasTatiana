@@ -262,7 +262,7 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE BARRAS PORCENTUALES (IMPECABLE Y SIN ERRORES EN STREAMLIT)
+# GRÁFICO DE BARRAS PORCENTUALES (ORDENADO DIRECTAMENTE EN PANDAS)
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 2px;'>💖 Distribución de Fondos</h4>", unsafe_allow_html=True)
 
@@ -286,9 +286,13 @@ df_grafico = pd.DataFrame({
     ]
 })
 
+# Ordenar explícitamente en Pandas con Categorical para evitar errores de Altair
+orden_categorias = ['Disponible', 'Imprevistos', 'Pendiente', 'Pagado']
+df_grafico['Categoría'] = pd.Categorical(df_grafico['Categoría'], categories=orden_categorias, ordered=True)
+
 bar_chart = alt.Chart(df_grafico).mark_bar(cornerRadius=6).encode(
     x=alt.X('Porcentaje:Q', title=None, axis=None, scale=alt.Scale(domain=[0, 100])),
-    y=alt.Y('Categoría:N', title=None, sort=['Disponible', 'Imprevistos', 'Pendiente', 'Pagado'], axis=alt.Axis(labelFont="Montserrat", labelFontSize=11, labelColor="#3E2723", labelFontWeight="700")),
+    y=alt.Y('Categoría:N', title=None, axis=alt.Axis(labelFont="Montserrat", labelFontSize=11, labelColor="#3E2723", labelFontWeight="700")),
     color=alt.Color(
         'Categoría:N',
         scale=alt.Scale(
