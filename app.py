@@ -147,15 +147,15 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "gas_m", "nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "tc_m", "nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
-        # Sistecredito actualizados y marcados como pagados hoy
+        # Sistecredito
         {"id": "sist_vest", "nombre": "Sistecredito Vestido", "valor": 39413.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "sist_sud", "nombre": "Sistecredito Sudadera", "valor": 59599.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "sist_mal", "nombre": "Sistecredito Maleta (Totto)", "valor": 66051.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
-        # Préstamo Nicolás septiembre (Cuota semanal de 216.000)
+        # Préstamo Nicolás septiembre
         {"id": "nicolas_q1", "nombre": "Préstamo Nicolás (Cuota 1)", "valor": 216000.0, "tipo": "Préstamo 20%", "total": 5, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "22 de Sept"},
 
-        # Deuda pendiente Nicolás en Octubre (Mitad de mes)
+        # Deuda pendiente Nicolás en Octubre
         {"id": "nicolas_oct_m", "nombre": "Deuda Nicolás Octubre (Q1)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Octubre Q1"},
 
         {"id": "internet_m", "nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
@@ -167,7 +167,6 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "gas_f", "nombre": "Gas (Fin)", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "tc_f", "nombre": "Tarjeta de Crédito (Fin)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         
-        # Deuda pendiente Nicolás en Octubre (Fin de mes)
         {"id": "nicolas_oct_f", "nombre": "Deuda Nicolás Octubre (Q2)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Octubre Q2"},
 
         {"id": "internet_f", "nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
@@ -208,8 +207,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 periodo_filtro = "Mitad de Mes" if "Mitad" in quincena_tipo else "Fin de Mes"
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
 
+# Marcamos por defecto como pagados lo que ya pagaste (Camilo, Tarjeta, Sistecredito)
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
     st.session_state.pagos_por_periodo[clave_periodo_actual] = {
+        "camilo_m": True,
+        "tc_m": True,
         "sist_vest": True,
         "sist_sud": True,
         "sist_mal": True
@@ -418,8 +420,8 @@ for i in range(0, len(items_filtrados), cols_por_fila):
 
 st.markdown("<hr style='border: 1px solid #CE93D8; margin: 15px 0;'>", unsafe_allow_html=True)
 
-# PESTAÑAS INFERIORES PRO
-tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportar"])
+# PESTAÑAS INFERIORES PRO (CON RESUMEN POR QUINCENA Y MES)
+tab_deudas, tab_resumen, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "📊 Resumen Quincena & Mes", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "🚨 Imprevistos & Exportar"])
 
 with tab_deudas:
     with st.form(key="form_nueva_deuda_main"):
@@ -445,6 +447,38 @@ with tab_deudas:
             })
             st.success("¡Deuda guardada correctamente y sumada a la deuda global!")
             st.rerun()
+
+with tab_resumen:
+    st.markdown("<h4 style='color: #4A148C; font-weight: 800;'>📊 Resumen General por Periodos y Meses</h4>", unsafe_allow_html=True)
+    st.markdown(f"**Mes consultado:** {mes_seleccionado}")
+    
+    # Resumen Mitad de Mes
+    tot_mitad = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Mitad de Mes")
+    pagado_mitad = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Mitad de Mes" and st.session_state.pagos_por_periodo.get(f"{mes_seleccionado} - Mitad de Mes", {}).get(item["id"], False))
+    
+    # Resumen Fin de Mes
+    tot_fin = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Fin de Mes")
+    pagado_fin = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Fin de Mes" and st.session_state.pagos_por_periodo.get(f"{mes_seleccionado} - Fin de Mes", {}).get(item["id"], False))
+
+    col_res1, col_res2 = st.columns(2)
+    with col_res1:
+        st.markdown(f"""
+            <div class="kiut-card-grid">
+                <h5 style="color:#6A1B9A; margin-top:0;">🌸 Mitad de Mes (Día 15)</h5>
+                <p><b>Total Obligaciones:</b> {formato_COP(tot_mitad)}</p>
+                <p><b>Pagado:</b> {formato_COP(pagado_mitad)}</p>
+                <p><b>Pendiente:</b> {formato_COP(tot_mitad - pagado_mitad)}</p>
+            </div>
+        """, unsafe_allow_html=True)
+    with col_res2:
+        st.markdown(f"""
+            <div class="kiut-card-grid">
+                <h5 style="color:#7B1FA2; margin-top:0;">🌸 Fin de Mes (Día 20)</h5>
+                <p><b>Total Obligaciones:</b> {formato_COP(tot_fin)}</p>
+                <p><b>Pagado:</b> {formato_COP(pagado_fin)}</p>
+                <p><b>Pendiente:</b> {formato_COP(tot_fin - pagado_fin)}</p>
+            </div>
+        """, unsafe_allow_html=True)
 
 with tab_editar:
     st.markdown("<p style='font-weight: 700; color: #4A148C;'>Si alguna cuota subió o bajó de precio este mes, selecciónala aquí y actualiza su valor:</p>", unsafe_allow_html=True)
