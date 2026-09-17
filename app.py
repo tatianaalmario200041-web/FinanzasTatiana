@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 
 st.set_page_config(
-    page_title="Finanzas Tatis Pro",
+    page_title="Finanzas Tatis",
     page_icon="🌸",
     layout="wide",
     initial_sidebar_state="collapsed"
