@@ -262,48 +262,52 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE ANILLO (CON VALOR MÍNIMO PARA QUE NUNCA SE ROMPA)
+# GRÁFICO DE BARRAS PORCENTUALES (IMPECABLE Y SIN ERRORES EN STREAMLIT)
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
-st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 0px;'>💖 Distribución</h4>", unsafe_allow_html=True)
+st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 2px;'>💖 Distribución de Fondos</h4>", unsafe_allow_html=True)
 
 val_pagado = float(total_pagado_obligaciones_actual)
 val_pendiente = float(sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False)))
 val_imprevistos = float(total_imprevistos)
 val_disponible = float(max(0.0, quincena_que_queda))
 
-# Ponemos un epsilon (1.0) si todo está en 0 para que la dona no desaparezca ni se deforme
-if val_pagado == 0 and val_pendiente == 0 and val_imprevistos == 0 and val_disponible == 0:
-    val_disponible = 1.0
+total_base_calc = val_pagado + val_pendiente + val_imprevistos + val_disponible
+if total_base_calc <= 0:
+    total_base_calc = 1.0
 
 df_grafico = pd.DataFrame({
     'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
-    'Valor': [val_pagado if val_pagado > 0 else 0.001, 
-              val_pendiente if val_pendiente > 0 else 0.001, 
-              val_imprevistos if val_imprevistos > 0 else 0.001, 
-              val_disponible if val_disponible > 0 else 0.001]
+    'Monto': [val_pagado, val_pendiente, val_imprevistos, val_disponible],
+    'Porcentaje': [
+        (val_pagado / total_base_calc) * 100,
+        (val_pendiente / total_base_calc) * 100,
+        (val_imprevistos / total_base_calc) * 100,
+        (val_disponible / total_base_calc) * 100
+    ]
 })
 
-base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=45, outerRadius=80, padAngle=3, cornerRadius=6).encode(
-    theta=alt.Theta(field="Valor", type="quantitative"),
+bar_chart = alt.Chart(df_grafico).mark_bar(cornerRadius=6).encode(
+    x=alt.X('Porcentaje:Q', title=None, axis=None, scale=alt.Scale(domain=[0, 100])),
+    y=alt.Y('Categoría:N', title=None, sort=['Disponible', 'Imprevistos', 'Pendiente', 'Pagado'], axis=alt.Axis(labelFont="Montserrat", labelFontSize=11, labelColor="#3E2723", labelFontWeight="700")),
     color=alt.Color(
-        field="Categoría", 
-        type="nominal", 
+        'Categoría:N',
         scale=alt.Scale(
-            domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
+            domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
             range=['#6A1B9A', '#D81B60', '#BA68C8', '#F48FB1']
-        ), 
-        legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=10, labelColor="#3E2723")
+        ),
+        legend=None
     ),
     tooltip=[
         alt.Tooltip('Categoría', title="Concepto"),
-        alt.Tooltip('Valor', title="Monto Real (COP)", format="$,.0f")
+        alt.Tooltip('Monto', title="Monto Real (COP)", format="$,.0f"),
+        alt.Tooltip('Porcentaje', title="Porcentaje", format=".1f")
     ]
 ).properties(
-    width=240,
-    height=210
+    width=260,
+    height=150
 )
 
-st.sidebar.altair_chart(base_chart, use_container_width=True)
+st.sidebar.altair_chart(bar_chart, use_container_width=True)
 
 
 # -------------------------------------------------------------
