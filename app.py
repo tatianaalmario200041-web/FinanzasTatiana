@@ -262,7 +262,7 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE BARRAS PORCENTUALES (ORDENADO DIRECTAMENTE EN PANDAS)
+# GRÁFICO DE BARRAS PORCENTUALES (SEGURO Y COMPATIBLE)
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 2px;'>💖 Distribución de Fondos</h4>", unsafe_allow_html=True)
 
@@ -286,13 +286,12 @@ df_grafico = pd.DataFrame({
     ]
 })
 
-# Ordenar explícitamente en Pandas con Categorical para evitar errores de Altair
 orden_categorias = ['Disponible', 'Imprevistos', 'Pendiente', 'Pagado']
 df_grafico['Categoría'] = pd.Categorical(df_grafico['Categoría'], categories=orden_categorias, ordered=True)
 
 bar_chart = alt.Chart(df_grafico).mark_bar(cornerRadius=6).encode(
     x=alt.X('Porcentaje:Q', title=None, axis=None, scale=alt.Scale(domain=[0, 100])),
-    y=alt.Y('Categoría:N', title=None, axis=alt.Axis(labelFont="Montserrat", labelFontSize=11, labelColor="#3E2723", labelFontWeight="700")),
+    y=alt.Y('Categoría:N', title=None, axis=alt.Axis(labelFontSize=11, labelColor="#3E2723")),
     color=alt.Color(
         'Categoría:N',
         scale=alt.Scale(
@@ -330,7 +329,6 @@ for i in range(0, len(items_filtrados), cols_por_fila):
             item_id = item["id"]
             esta_pagado = pagos_actuales.get(item_id, False)
             
-            # Cálculo exacto del porcentaje de avance
             if "total" in item and item["total"] > 0:
                 porcentaje = int(round((item["pagadas"] / item["total"]) * 100))
             else:
@@ -339,7 +337,6 @@ for i in range(0, len(items_filtrados), cols_por_fila):
             with cols[j]:
                 st.markdown('<div class="kiut-card-grid">', unsafe_allow_html=True)
                 
-                # BARRA DE PROGRESO IDÉNTICA A TU IDEA (Fondo moradito kiut, texto blanco)
                 st.markdown(f"""
                     <div style="background-color: #E1BEE7; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1.5px solid #BA68C8;">
                         <div style="background: linear-gradient(135deg, #7B1FA2 0%, #8E24AA 100%); width: {porcentaje}%; height: 100%; border-radius: 6px 0 0 6px; transition: width 0.4s ease;"></div>
