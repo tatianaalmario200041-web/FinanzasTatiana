@@ -202,10 +202,13 @@ obligaciones_activas = []
 dinero_liberado_total = 0.0
 
 for item in st.session_state.obligaciones_base:
-    if "total" in item and item["pagadas"] >= item["total"]:
-        dinero_liberado_total += item["valor"]
-    else:
-        obligaciones_activas.append(item)
+    # Si tiene cuotas y todas están pagadas, se considera liberado proporcionalmente
+    if "total" in item and item["total"] > 0:
+        if item["pagadas"] >= item["total"]:
+            dinero_liberado_total += item["valor"]
+    
+    # Mantenemos las obligaciones visibles en sus periodos correspondientes
+    obligaciones_activas.append(item)
 
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
@@ -254,7 +257,7 @@ st.sidebar.markdown(f'''
     </div>
 ''', unsafe_allow_html=True)
 
-total_deuda_global = sum(item["valor"] * (item["total"] - item["pagadas"]) if "total" in item else item["valor"] for item in obligaciones_activas)
+total_deuda_global = sum(item["valor"] * max(0, (item["total"] - item["pagadas"])) if "total" in item else item["valor"] for item in obligaciones_activas)
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
@@ -397,20 +400,21 @@ for i in range(0, len(items_filtrados), cols_por_fila):
 
 st.markdown("<hr style='border: 1px solid #CE93D8; margin: 15px 0;'>", unsafe_allow_html=True)
 
-# PESTAÑAS INFERIORES PRO (AÑADIDA PESTAÑA DE MODIFICAR CUOTAS)
-tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportar"])
+# PESTAÑAS INFERIORES PRO
+tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportار"])
 
 with tab_deudas:
     with st.form(key="form_nueva_deuda_main"):
         c_nd1, c_nd2, c_nd3 = st.columns(3)
         with c_nd1:
             n_nombre = st.text_input("Nombre de la obligación")
-            n_valor_cuota = st.number_input("Valor Cuota", min_value=0.0, step=10000.0)
+            n_valor_cuota = st.number_input("Valor Cuota / Deuda Total", min_value=0.0, step=10000.0)
         with c_nd2:
-            n_total_cuotas = st.number_input("Total Cuotas", min_value=1, value=1, step=1)
-            n_periodo = st.selectbox("Quincena", ["Mitad de Mes", "Fin de Mes"])
+            n_total_cuotas = st.number_input("Total Cuotas (1 si es pago único)", min_value=1, value=1, step=1)
+            # AÑADIDA OPCIÓN PARA DEUDAS LIBRES O SIN PLAZO FIJO DE QUINCENA
+            n_periodo = st.selectbox("Asignar a Quincena / Tipo", ["Mitad de Mes", "Fin de Mes", "Deuda Libre / Sin Quincena Fija"])
         with c_nd3:
-            n_fecha_pago = st.text_input("Fecha / Frecuencia (Ej. Día 15)")
+            n_fecha_pago = st.text_input("Fecha / Frecuencia (Ej. Libre, Día 15)")
             st.markdown("<br>", unsafe_allow_html=True)
             submit_deuda = st.form_submit_button("Guardar Nueva Deuda 💜")
         
@@ -418,10 +422,11 @@ with tab_deudas:
             nuevo_id = f"deuda_nueva_{len(st.session_state.obligaciones_base)}"
             st.session_state.obligaciones_base.append({
                 "id": nuevo_id, "nombre": n_nombre, "valor": n_valor_cuota,
-                "tipo": "Crédito Nuevo", "total": int(n_total_cuotas), "pagadas": 0,
+                "tipo": "Crédito Nuevo" if n_total_cuotas > 1 else "Deuda Única", 
+                "total": int(n_total_cuotas), "pagadas": 0,
                 "periodo": n_periodo, "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir"
             })
-            st.success("¡Deuda guardada correctamente!")
+            st.success("¡Deuda guardada correctamente y sumada a la deuda global!")
             st.rerun()
 
 with tab_editar:
