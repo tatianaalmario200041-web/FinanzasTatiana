@@ -294,9 +294,45 @@ st.sidebar.markdown(f"""
 
 
 # =========================================================================
-# --- 5. PANTALLA PRINCIPAL: OBLIGACIONES Y NUEVAS DEUDAS ---
+# --- 5. PANTALLA PRINCIPAL: ACCESO RÁPIDO DE PAGOS & OBLIGACIONES ---
 # =========================================================================
-st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
+
+# ⚡ SECCIÓN DE CHECKBOXES RÁPIDOS ARRIBA PARA PAGAR AL INSTANTE SIN DESLIZAR
+st.markdown('<div class="config-box-central" style="border: 2px solid #AB47BC;">', unsafe_allow_html=True)
+st.markdown("### ⚡ Clic Rápido: Marcar Pagos de la Quincena")
+st.markdown("<span style='color: #6A1B9A; font-size: 0.95rem;'>Marca o desmarca aquí las obligaciones para actualizar al instante sin buscar abajo:</span>", unsafe_allow_html=True)
+st.markdown("<br>", unsafe_allow_html=True)
+
+cols_checkboxes = st.columns(3)
+idx_col = 0
+
+for item in st.session_state.obligaciones_base:
+    if item["periodo"] != periodo_filtro:
+        continue
+    item_id = item["id"]
+    estado_actual = pagos_actuales.get(item_id, False)
+    
+    with cols_checkboxes[idx_col % 3]:
+        nuevo_estado = st.checkbox(
+            f"**{item['nombre']}**\n`{formato_COP(item['valor'])}`",
+            value=estado_actual,
+            key=f"chk_quick_{clave_periodo_actual}_{item_id}"
+        )
+        if nuevo_estado != estado_actual:
+            st.session_state.pagos_por_periodo[clave_periodo_actual][item_id] = nuevo_estado
+            if "total" in item:
+                if nuevo_estado and not estado_actual and item["pagadas"] < item["total"]:
+                    item["pagadas"] += 1
+                elif not nuevo_estado and estado_actual and item["pagadas"] > 0:
+                    item["pagadas"] -= 1
+            st.rerun()
+    idx_col += 1
+
+st.markdown('</div>', unsafe_allow_html=True)
+
+
+# TARJETAS DETALLADAS DE OBLIGACIONES
+st.markdown(f"### 🎯 Detalle de Obligaciones en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
     if item["periodo"] != periodo_filtro:
