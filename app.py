@@ -10,144 +10,148 @@ st.set_page_config(
 
 st.markdown("""
     <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400&display=swap');
     
     html, body, [class*="css"] {
         font-family: 'Montserrat', sans-serif;
-        font-size: 13.5px;
+        font-size: 14px;
         color: #4A3B5C;
     }
     
     .block-container {
         padding-top: 0.8rem !important;
-        padding-bottom: 1rem !important;
+        padding-bottom: 1.5rem !important;
+        max-width: 98% !important;
     }
     
     .main {
-        background: linear-gradient(135deg, #FBF8FD 0%, #F5EEF8 50%, #FAF0F5 100%);
+        background: linear-gradient(135deg, #FAF5FD 0%, #F3E5F5 40%, #FCE4EC 100%);
     }
     
     [data-testid="stSidebar"] {
         min-width: 360px;
-        max-width: 390px;
+        max-width: 400px;
         background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
-        border-right: 2px solid #D1C4E9;
+        border-right: 2px solid #BA68C8;
     }
     
     [data-testid="stSidebar"] > div:first-child {
-        position: sticky;
-        top: 0px;
-        height: 100vh;
-        overflow-y: auto;
-        padding-bottom: 1rem;
         padding-top: 1rem;
+        padding-bottom: 1rem;
     }
     
-    /* TÍTULO HERMOSO CON ROSAS Y TONOS LILAS/MORADOS */
+    /* TÍTULO HERMOSO CON ROSAS Y TONOS LILAS/MORADOS PERFECTOS */
     .header-container {
         text-align: center;
-        background: linear-gradient(135deg, rgba(243, 229, 245, 0.9) 0%, rgba(225, 190, 231, 0.7) 100%);
-        padding: 12px 20px;
-        border-radius: 16px;
-        border: 2px solid #CE93D8;
-        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1);
-        margin-bottom: 12px;
+        background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 50%, #D81B60 100%);
+        padding: 18px 25px;
+        border-radius: 20px;
+        border: 2px solid #E1BEE7;
+        box-shadow: 0 6px 20px rgba(156, 39, 176, 0.25);
+        margin-bottom: 16px;
     }
     
     .header-title {
         font-family: 'Montserrat', sans-serif;
-        font-weight: 800;
-        font-size: 2rem;
-        background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 50%, #D81B60 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-weight: 900;
+        font-size: 2.3rem;
+        color: #FFFFFF;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         margin: 0;
         padding: 0;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
     }
 
-    .header-subtitle {
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 600;
-        font-size: 0.85rem;
-        color: #8E24AA;
-        margin-top: 4px;
-        margin-bottom: 0;
-    }
-
+    /* BOTONES ESTILIZADOS KIUT */
     .stButton>button {
-        background: linear-gradient(135deg, #AB47BC 0%, #EC407A 100%);
+        background: linear-gradient(135deg, #9C27B0 0%, #E91E63 100%);
         color: white;
-        border-radius: 8px;
-        padding: 0.25rem 0.6rem;
+        border-radius: 12px;
+        padding: 0.4rem 1rem;
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         border: none;
-        box-shadow: 0 2px 6px rgba(171, 71, 188, 0.2);
+        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
         width: 100%;
+        transition: all 0.3s ease;
     }
     .stButton>button:hover {
-        background: linear-gradient(135deg, #8E24AA 0%, #D81B60 100%);
+        background: linear-gradient(135deg, #7B1FA2 0%, #C2185B 100%);
+        box-shadow: 0 6px 15px rgba(156, 39, 176, 0.4);
+        transform: translateY(-1px);
         color: white;
+    }
+
+    /* BOTÓN FLOTANTE / ESPECIAL DE GASTO HORMIGA */
+    .btn-hormiga-container {
+        background: linear-gradient(135deg, #E1BEE7 0%, #F8BBD0 100%);
+        padding: 12px 18px;
+        border-radius: 14px;
+        border: 2px dashed #8E24AA;
+        box-shadow: 0 4px 12px rgba(142, 36, 170, 0.15);
+        margin-bottom: 16px;
+        text-align: center;
     }
 
     .metric-card-sidebar {
         background-color: #FFFFFF;
-        padding: 8px 10px;
-        border-radius: 10px;
-        box-shadow: 0 3px 10px rgba(156, 39, 176, 0.08);
+        padding: 10px 14px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.1);
         border: 2px solid #CE93D8;
         text-align: center;
-        margin-bottom: 6px;
+        margin-bottom: 8px;
     }
     .metric-value-gigante {
         color: #7B1FA2; 
-        font-size: 1.3rem; 
+        font-size: 1.45rem; 
         font-weight: 900; 
-        margin: 1px 0;
+        margin: 2px 0;
     }
 
     .config-box-compact {
-        background: rgba(255, 255, 255, 0.9);
-        padding: 8px 12px;
-        border-radius: 10px;
-        border: 1px solid #E1BEE7;
-        box-shadow: 0 3px 10px rgba(186, 104, 200, 0.06);
-        margin-bottom: 10px;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 12px 16px;
+        border-radius: 14px;
+        border: 2px solid #D1C4E9;
+        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.08);
+        margin-bottom: 16px;
     }
     
     .kiut-card {
         background-color: #FFFFFF;
-        padding: 8px 12px;
-        border-radius: 10px;
-        border: 1px solid #E1BEE7;
-        box-shadow: 0 2px 8px rgba(156, 39, 176, 0.04);
-        margin-bottom: 6px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1.5px solid #E1BEE7;
+        box-shadow: 0 3px 10px rgba(156, 39, 176, 0.06);
+        margin-bottom: 8px;
     }
 
     .global-dark-box-sidebar {
         background: linear-gradient(135deg, #6A1B9A 0%, #8E24AA 100%);
-        padding: 8px;
-        border-radius: 10px;
+        padding: 10px;
+        border-radius: 12px;
         color: white;
         text-align: center;
         border: 2px solid #CE93D8;
-        margin-top: 4px;
-        margin-bottom: 4px;
+        margin-top: 6px;
+        margin-bottom: 6px;
+        box-shadow: 0 4px 10px rgba(106, 27, 154, 0.2);
     }
 
     .progress-container {
         width: 100%;
         background-color: #F3E5F5;
-        border-radius: 6px;
-        height: 8px;
-        margin: 3px 0;
+        border-radius: 8px;
+        height: 10px;
+        margin: 6px 0;
         overflow: hidden;
+        border: 1px solid #E1BEE7;
     }
     .progress-bar-kiut {
         height: 100%;
         background: linear-gradient(135deg, #AB47BC 0%, #EC407A 100%);
-        border-radius: 6px;
+        border-radius: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -184,26 +188,52 @@ if 'imprevistos_por_periodo' not in st.session_state:
 if 'prestamos_por_cobrar' not in st.session_state:
     st.session_state.prestamos_por_cobrar = []
 
-# TÍTULO HERMOSO CON ROSAS Y TONOS LILAS/MORADOS
+# TÍTULO LIMPIO, HERMOSO Y ELEGANTE
 st.markdown("""
     <div class="header-container">
         <h1 class="header-title">🌸 Finanzas Tatis 🌸</h1>
-        <p class="header-subtitle">💜 Tu Panel KiuT de Control Financiero & Deudas 💜</p>
     </div>
 """, unsafe_allow_html=True)
 
-# Configuración compacta superior
+# BOTÓN RÁPIDO SUPERIOR PARA GASTO HORMIGA (ESTILO POPUP / PESTAÑITA CHIQUITA)
+st.markdown('<div class="btn-hormiga-container">', unsafe_allow_html=True)
+with st.expander("✨ ☕ Registrar Gasto Hormiga / Imprevisto Rápido (Click Aquí)", expanded=False):
+    with st.form(key="form_flash_celular_top"):
+        c_fl1, c_fl2, c_fl3 = st.columns([2.5, 1.5, 1])
+        with c_fl1:
+            flash_nombre = st.text_input("¿En qué gastaste?", placeholder="Ej. Un cafecito, mecato...")
+        with c_fl2:
+            flash_valor = st.number_input("Valor (COP)", min_value=0.0, step=2000.0)
+        with c_fl3:
+            st.markdown("<div style='height: 22px;'></div>", unsafe_allow_html=True)
+            submit_flash = st.form_submit_button("💾 Guardar")
+        
+        if submit_flash and flash_nombre and flash_valor > 0:
+            clave_temp_act = f"{st.session_state.get('select_mes_main', 'Marzo 2026')} - {'Mitad de Mes' if 'Mitad' in st.session_state.get('select_quincena_main', 'Mitad de Mes') else 'Fin de Mes'}"
+            if clave_temp_act not in st.session_state.imprevistos_por_periodo:
+                st.session_state.imprevistos_por_periodo[clave_temp_act] = []
+            st.session_state.imprevistos_por_periodo[clave_temp_act].append({"nombre": flash_nombre, "valor": flash_valor})
+            st.success("¡Gasto guardado al instante con éxito! 💖")
+            st.rerun()
+st.markdown('</div>', unsafe_allow_html=True)
+
+# Configuración compacta superior con excelente distribución
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2, col_cfg3, col_cfg4, col_cfg5 = st.columns([2, 2, 2, 2.2, 2.2])
 with col_cfg1:
+    st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Banco (COP)</span>", unsafe_allow_html=True)
     saldo_actual_banco = st.number_input("Banco (COP)", value=2800000.0, step=100000.0, label_visibility="collapsed")
 with col_cfg2:
+    st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Nómina Base</span>", unsafe_allow_html=True)
     nomina_quincenal_neta = st.number_input("Nómina Base", value=2200000.0, step=10000.0, label_visibility="collapsed")
 with col_cfg3:
+    st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Extras (COP)</span>", unsafe_allow_html=True)
     ingresos_extra = st.number_input("Extras (COP)", value=0.0, step=10000.0, label_visibility="collapsed")
 with col_cfg4:
+    st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Mes</span>", unsafe_allow_html=True)
     mes_seleccionado = st.selectbox("Mes", ["Marzo 2026", "Abril 2026", "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026", "Septiembre 2026"], key="select_mes_main", label_visibility="collapsed")
 with col_cfg5:
+    st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Quincena</span>", unsafe_allow_html=True)
     quincena_tipo = st.selectbox("Quincena", ["Mitad de Mes (Día 15)", "Fin de Mes (Día 20)"], key="select_quincena_main", label_visibility="collapsed")
 st.markdown('</div>', unsafe_allow_html=True)
 
@@ -215,7 +245,7 @@ if clave_periodo_actual not in st.session_state.pagos_por_periodo:
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
     st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
 
-# BARRA LATERAL
+# BARRA LATERAL PERFECTAMENTE DISTRIBUIDA
 st.sidebar.markdown(f"### 💜 {clave_periodo_actual}")
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
@@ -225,37 +255,37 @@ quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pag
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h6 style="color:#6A1B9A; margin:0;">📥 Ingresos Totales</h6>
+        <h6 style="color:#6A1B9A; margin:0; font-weight:700;">📥 Ingresos Totales</h6>
         <div class="metric-value-gigante">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h6 style="color:#7B1FA2; margin:0;">📤 Pagado Periodo</h6>
+        <h6 style="color:#7B1FA2; margin:0; font-weight:700;">📤 Pagado Periodo</h6>
         <div class="metric-value-gigante">{formato_COP(total_pagado_obligaciones_actual)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h6 style="color:#AD1457; margin:0;">🚨 Imprevistos</h6>
+        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos / Hormiga</h6>
         <div class="metric-value-gigante">{formato_COP(total_imprevistos)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 color_queda = "#00897B" if quincena_que_queda >= 0 else "#E53935"
 st.sidebar.markdown(f'''
-    <div class="metric-card-sidebar" style="border: 2px solid {color_queda};">
-        <h6 style="color:{color_queda}; margin:0;">✨ QUEDA ✨</h6>
-        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</div>
+    <div class="metric-card-sidebar" style="border: 2.5px solid {color_queda}; background: #FFFDE7;">
+        <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ LO QUE QUEDA ✨</h6>
+        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.5rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
 porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
 
-st.sidebar.markdown(f"**Progreso Periodo: {porcentaje_periodo}%**")
+st.sidebar.markdown(f"<div style='font-weight:700; color:#4A3B5C; margin-top:8px;'>Progreso Periodo: {porcentaje_periodo}%</div>", unsafe_allow_html=True)
 st.sidebar.markdown(f'''
     <div class="progress-container">
         <div class="progress-bar-kiut" style="width: {porcentaje_periodo}%;"></div>
@@ -268,41 +298,27 @@ porcentaje_global = int((total_pagado_global / total_deuda_global) * 100) if tot
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">👑 Total Global Deudas</div>
-    <div style="font-size: 1.15rem; font-weight: 900; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
+    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing:0.5px;">👑 Total Global Deudas</div>
+    <div style="font-size: 1.25rem; font-weight: 900; color: #FFFFFF; margin-top:3px;">{formato_COP(total_deuda_global)}</div>
 </div>
 """, unsafe_allow_html=True)
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">🚀 Avance Global</div>
-    <div style="font-size: 1.15rem; font-weight: 900; color: #FCE4EC;">{porcentaje_global}% <span style="font-size: 0.85rem; color: #FFE082;">({formato_COP(total_pagado_global)})</span></div>
+    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing:0.5px;">🚀 Avance Global</div>
+    <div style="font-size: 1.25rem; font-weight: 900; color: #FCE4EC; margin-top:3px;">{porcentaje_global}% <span style="font-size: 0.9rem; color: #FFE082;">({formato_COP(total_pagado_global)})</span></div>
 </div>
 """, unsafe_allow_html=True)
 
-# BOTÓN RÁPIDO PARA CELULAR (Gasto Hormiga / Imprevisto Flash)
-with st.expander("⚡ AGREGAR GASTO HORMIGA / IMPREVISTO RÁPIDO (Ideal Celular)", expanded=False):
-    with st.form(key="form_flash_celular"):
-        c_fl1, c_fl2 = st.columns([2, 1])
-        with c_fl1:
-            flash_nombre = st.text_input("¿Qué compraste / gastaste?")
-        with c_fl2:
-            flash_valor = st.number_input("Valor (COP)", min_value=0.0, step=5000.0)
-        
-        if st.form_submit_button("💥 Registrar de una vez") and flash_nombre and flash_valor > 0:
-            st.session_state.imprevistos_por_periodo[clave_periodo_actual].append({"nombre": flash_nombre, "valor": flash_valor})
-            st.success("¡Gasto registrado al instante!")
-            st.rerun()
-
-# TABLA RÁPIDA DE OBLIGACIONES
-st.markdown("### ⚡ Control de Pagos de la Quincena")
+# TABLA RÁPIDA DE OBLIGACIONES CON LINEAS PERFECTAS Y ALINEADAS
+st.markdown("<h3 style='color: #6A1B9A; font-weight: 800; margin-top: 10px;'>⚡ Control de Pagos de la Quincena</h3>", unsafe_allow_html=True)
 
 cols_header = st.columns([3.5, 2, 2, 1.5, 1.5])
-with cols_header[0]: st.markdown("**Obligación**")
-with cols_header[1]: st.markdown("**Valor**")
-with cols_header[2]: st.markdown("**Cuotas / Vence**")
-with cols_header[3]: st.markdown("**Estado**")
-with cols_header[4]: st.markdown("**Acción**")
+with cols_header[0]: st.markdown("<span style='font-weight:800; color:#8E24AA;'>Obligación</span>", unsafe_allow_html=True)
+with cols_header[1]: st.markdown("<span style='font-weight:800; color:#8E24AA;'>Valor</span>", unsafe_allow_html=True)
+with cols_header[2]: st.markdown("<span style='font-weight:800; color:#8E24AA;'>Cuotas / Vence</span>", unsafe_allow_html=True)
+with cols_header[3]: st.markdown("<span style='font-weight:800; color:#8E24AA;'>Estado</span>", unsafe_allow_html=True)
+with cols_header[4]: st.markdown("<span style='font-weight:800; color:#8E24AA;'>Acción</span>", unsafe_allow_html=True)
 
 for item in st.session_state.obligaciones_base:
     if item["periodo"] != periodo_filtro:
@@ -311,20 +327,22 @@ for item in st.session_state.obligaciones_base:
     item_id = item["id"]
     esta_pagado = pagos_actuales.get(item_id, False)
     
-    st.markdown('<div class="kiut-card" style="padding: 6px 10px; margin-bottom: 4px;">', unsafe_allow_html=True)
+    st.markdown('<div class="kiut-card">', unsafe_allow_html=True)
     c1, c2, c3, c4, c5 = st.columns([3.5, 2, 2, 1.5, 1.5])
     
     with c1:
-        st.markdown(f"**{item['nombre']}** <span style='font-size:0.75rem; color:#8E24AA;'>({item['tipo']})</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-weight:700; font-size:14px;'>{item['nombre']}</span> <br><span style='font-size:0.75rem; color:#8E24AA; font-weight:600;'>({item['tipo']})</span>", unsafe_allow_html=True)
     with c2:
-        st.markdown(f"**{formato_COP(item['valor'])}**", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-weight:800; font-size:14px; color:#4A3B5C;'>{formato_COP(item['valor'])}</span>", unsafe_allow_html=True)
     with c3:
         if "total" in item:
-            st.markdown(f"{item['pagadas']}/{item['total']} cuotas", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size:13px; font-weight:600;'>{item['pagadas']}/{item['total']} cuotas</span>", unsafe_allow_html=True)
         else:
-            st.markdown(f"Vence: {item.get('fecha_pago', '-')}", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size:13px; font-weight:600;'>Vence: {item.get('fecha_pago', '-')}</span>", unsafe_allow_html=True)
     with c4:
-        st.markdown("✅ Pagado" if esta_pagado else "⏳ Pendiente", unsafe_allow_html=True)
+        estado_txt = "✅ Pagado" if esta_pagado else "⏳ Pendiente"
+        color_est = "#2E7D32" if esta_pagado else "#EF6C00"
+        st.markdown(f"<span style='font-weight:700; color:{color_est}; font-size:13px;'>{estado_txt}</span>", unsafe_allow_html=True)
     with c5:
         if not esta_pagado:
             if st.button("Pagar", key=f"pagar_{clave_periodo_actual}_{item_id}"):
@@ -340,68 +358,76 @@ for item in st.session_state.obligaciones_base:
                 st.rerun()
     st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("---")
+st.markdown("<hr style='border: 1px solid #E1BEE7; margin: 20px 0;'>", unsafe_allow_html=True)
 
-# GESTIÓN Y HERRAMIENTAS
-tab_deudas, tab_prestamos, tab_extras = st.tabs(["+ Nueva Deuda", "Cuentas por Cobrar", "Imprevistos & Excel"])
+# GESTIÓN Y HERRAMIENTAS ADICIONALES
+tab_deudas, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Excel"])
 
 with tab_deudas:
+    st.markdown("<h4 style='color:#7B1FA2;'>Registrar Nueva Obligación o Crédito</h4>", unsafe_allow_html=True)
     with st.form(key="form_nueva_deuda_main"):
         col_nd1, col_nd2 = st.columns(2)
         with col_nd1:
-            n_nombre = st.text_input("Nombre")
+            n_nombre = st.text_input("Nombre de la obligación")
             n_valor_cuota = st.number_input("Valor Cuota", min_value=0.0, step=10000.0)
         with col_nd2:
             n_total_cuotas = st.number_input("Total Cuotas", min_value=1, value=1, step=1)
-            n_periodo = st.selectbox("Quincena", ["Mitad de Mes", "Fin de Mes"])
+            n_periodo = st.selectbox("Quincena a aplicar", ["Mitad de Mes", "Fin de Mes"])
         
-        n_fecha_pago = st.text_input("Fecha / Frecuencia")
-        if st.form_submit_button("Guardar Deuda") and n_nombre and n_valor_cuota > 0:
+        n_fecha_pago = st.text_input("Fecha / Frecuencia (Ej. Día 15, 28 de Marzo)")
+        if st.form_submit_button("Guardar Nueva Deuda 💜") and n_nombre and n_valor_cuota > 0:
             nuevo_id = f"deuda_nueva_{len(st.session_state.obligaciones_base)}"
             st.session_state.obligaciones_base.append({
                 "id": nuevo_id, "nombre": n_nombre, "valor": n_valor_cuota,
                 "tipo": "Crédito Nuevo", "total": int(n_total_cuotas), "pagadas": 0,
                 "periodo": n_periodo, "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir"
             })
-            st.success("¡Guardado!")
+            st.success("¡Deuda guardada correctamente!")
             st.rerun()
 
 with tab_prestamos:
+    st.markdown("<h4 style='color:#7B1FA2;'>Préstamos por Cobrar</h4>", unsafe_allow_html=True)
     with st.form(key="form_prestamo_main"):
         col_pr1, col_pr2 = st.columns(2)
         with col_pr1:
-            p_deudor = st.text_input("Deudor")
-            p_valor = st.number_input("Monto", min_value=0.0, step=10000.0)
+            p_deudor = st.text_input("Nombre de quien debe")
+            p_valor = st.number_input("Monto (COP)", min_value=0.0, step=10000.0)
         with col_pr2:
-            p_fecha = st.text_input("Fecha de pago")
+            p_fecha = st.text_input("Fecha estimada de pago")
             
-        if st.form_submit_button("Guardar Préstamo") and p_deudor and p_valor > 0:
+        if st.form_submit_button("Registrar Préstamo 🤝") and p_deudor and p_valor > 0:
             st.session_state.prestamos_por_cobrar.append({"deudor": p_deudor, "valor": p_valor, "fecha_pago": p_fecha or "Por definir"})
-            st.success("¡Registrado!")
+            st.success("¡Préstamo registrado!")
             st.rerun()
 
     if st.session_state.prestamos_por_cobrar:
+        st.markdown("<br>", unsafe_allow_html=True)
         for idx_p, prestamo in enumerate(st.session_state.prestamos_por_cobrar):
-            c_p1, c_p2, c_p3 = st.columns([3, 3, 1])
+            st.markdown('<div class="kiut-card">', unsafe_allow_html=True)
+            c_p1, c_p2, c_p3 = st.columns([3, 3, 1.5])
             with c_p1: st.markdown(f"**{prestamo['deudor']}**")
             with c_p2: st.markdown(f"{formato_COP(prestamo['valor'])} (Paga: {prestamo['fecha_pago']})")
             with c_p3:
-                if st.button("Cobrado", key=f"cobrado_{idx_p}"):
+                if st.button("Cobrado ✅", key=f"cobrado_{idx_p}"):
                     st.session_state.prestamos_por_cobrar.pop(idx_p)
                     st.rerun()
+            st.markdown('</div>', unsafe_allow_html=True)
 
 with tab_extras:
     col_ext1, col_ext2 = st.columns(2)
     with col_ext1:
+        st.markdown("<h4 style='color:#7B1FA2;'>Registro Detallado Imprevistos</h4>", unsafe_allow_html=True)
         with st.form(key="form_imprevisto_main_central"):
-            nombre_imp_m = st.text_input("Imprevisto")
-            valor_imp_m = st.number_input("Valor", min_value=0.0, step=10000.0)
-            if st.form_submit_button("Registrar Imprevisto") and nombre_imp_m and valor_imp_m > 0:
+            nombre_imp_m = st.text_input("Concepto Imprevisto")
+            valor_imp_m = st.number_input("Valor Imprevisto (COP)", min_value=0.0, step=10000.0)
+            if st.form_submit_button("Registrar en Periodo") and nombre_imp_m and valor_imp_m > 0:
                 st.session_state.imprevistos_por_periodo[clave_periodo_actual].append({"nombre": nombre_imp_m, "valor": valor_imp_m})
-                st.success("Registrado")
+                st.success("¡Imprevisto registrado!")
                 st.rerun()
     with col_ext2:
-        if st.button("Exportar a Excel (CSV)"):
+        st.markdown("<h4 style='color:#7B1FA2;'>Exportar Datos</h4>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:13px;'>Descarga la base completa de tus obligaciones en un archivo Excel compatible.</p>", unsafe_allow_html=True)
+        if st.button("📥 Descargar Excel (CSV)"):
             df_export = pd.DataFrame(st.session_state.obligaciones_base)
             csv_data = df_export.to_csv(index=False).encode('utf-8')
-            st.download_button("Descargar Archivo", data=csv_data, file_name="Finanzas_Tatis.csv", mime="text/csv")
+            st.download_button("Confirmar Descarga", data=csv_data, file_name="Finanzas_Tatis.csv", mime="text/csv")
