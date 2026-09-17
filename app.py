@@ -144,7 +144,7 @@ def formato_COP(valor):
 if 'obligaciones_base' not in st.session_state:
     st.session_state.obligaciones_base = [
         {"id": "camilo_m", "nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
-        {"id": "gas_m", "nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
+        {"id": "gas_m", "nombre": "Gas (Ya Separado)", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "tc_m", "nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
         # Sistecredito
@@ -152,11 +152,11 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "sist_sud", "nombre": "Sistecredito Sudadera", "valor": 59599.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "sist_mal", "nombre": "Sistecredito Maleta (Totto)", "valor": 66051.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
-        # Préstamo Nicolás septiembre
-        {"id": "nicolas_q1", "nombre": "Préstamo Nicolás (Cuota 1)", "valor": 216000.0, "tipo": "Préstamo 20%", "total": 5, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "22 de Sept"},
+        # Cuotas Semanales Nicolás ($216.000 cada martes)
+        {"id": "nic_sem_1", "nombre": "Cuota Nicolás Semanal (Marzo/Sept)", "valor": 216000.0, "tipo": "Préstamo Semanal", "total": 5, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Martes 22"},
 
-        # Deuda pendiente Nicolás en Octubre
-        {"id": "nicolas_oct_m", "nombre": "Deuda Nicolás Octubre (Q1)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Octubre Q1"},
+        # Gerardo
+        {"id": "gerardo_m", "nombre": "Deuda Gerardo", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Primera Quincena"},
 
         {"id": "internet_m", "nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "parq_m", "nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
@@ -167,7 +167,7 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "gas_f", "nombre": "Gas (Fin)", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "tc_f", "nombre": "Tarjeta de Crédito (Fin)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         
-        {"id": "nicolas_oct_f", "nombre": "Deuda Nicolás Octubre (Q2)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Octubre Q2"},
+        {"id": "gerardo_f", "nombre": "Deuda Gerardo (Fin)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Segunda Quincena"},
 
         {"id": "internet_f", "nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "parq_f", "nombre": "Parqueadero Q2", "valor": 60000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
@@ -207,10 +207,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 periodo_filtro = "Mitad de Mes" if "Mitad" in quincena_tipo else "Fin de Mes"
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
 
-# Marcamos por defecto como pagados lo que ya pagaste (Camilo, Tarjeta, Sistecredito)
+# Marcamos por defecto como pagados lo que ya pagaste (Camilo, Tarjeta, Sistecredito) y EXCLUIMOS el gas que ya está separado
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
     st.session_state.pagos_por_periodo[clave_periodo_actual] = {
         "camilo_m": True,
+        "gas_m": True,  # Ya separado
         "tc_m": True,
         "sist_vest": True,
         "sist_sud": True,
@@ -232,7 +233,8 @@ for item in st.session_state.obligaciones_base:
 
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
-total_pagado_obligaciones_actual = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and pagos_actuales.get(item["id"], False))
+# Si el gas ya está separado, no suma a lo que debes pagar de tu bolsillo actual
+total_pagado_obligaciones_actual = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and item["id"] != "gas_m" and pagos_actuales.get(item["id"], False))
 total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos_por_periodo[clave_periodo_actual])
 quincena_que_queda = presupuesto_quincena_inicial - total_pagado_obligaciones_actual - total_imprevistos
 
@@ -420,7 +422,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
 
 st.markdown("<hr style='border: 1px solid #CE93D8; margin: 15px 0;'>", unsafe_allow_html=True)
 
-# PESTAÑAS INFERIORES PRO (CON RESUMEN POR QUINCENA Y MES)
+# PESTAÑAS INFERIORES PRO
 tab_deudas, tab_resumen, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "📊 Resumen Quincena & Mes", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "🚨 Imprevistos & Exportar"])
 
 with tab_deudas:
@@ -452,11 +454,9 @@ with tab_resumen:
     st.markdown("<h4 style='color: #4A148C; font-weight: 800;'>📊 Resumen General por Periodos y Meses</h4>", unsafe_allow_html=True)
     st.markdown(f"**Mes consultado:** {mes_seleccionado}")
     
-    # Resumen Mitad de Mes
     tot_mitad = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Mitad de Mes")
     pagado_mitad = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Mitad de Mes" and st.session_state.pagos_por_periodo.get(f"{mes_seleccionado} - Mitad de Mes", {}).get(item["id"], False))
     
-    # Resumen Fin de Mes
     tot_fin = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Fin de Mes")
     pagado_fin = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == "Fin de Mes" and st.session_state.pagos_por_periodo.get(f"{mes_seleccionado} - Fin de Mes", {}).get(item["id"], False))
 
