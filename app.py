@@ -19,7 +19,7 @@ st.markdown("""
     }
     
     .block-container {
-        padding-top: 1rem !important;
+        padding-top: 0.8rem !important;
         padding-bottom: 1rem !important;
     }
     
@@ -43,16 +43,36 @@ st.markdown("""
         padding-top: 1rem;
     }
     
+    /* TÍTULO HERMOSO CON ROSAS Y TONOS LILAS/MORADOS */
+    .header-container {
+        text-align: center;
+        background: linear-gradient(135deg, rgba(243, 229, 245, 0.9) 0%, rgba(225, 190, 231, 0.7) 100%);
+        padding: 12px 20px;
+        border-radius: 16px;
+        border: 2px solid #CE93D8;
+        box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1);
+        margin-bottom: 12px;
+    }
+    
     .header-title {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 1.8rem;
-        background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 50%, #E91E63 100%);
+        font-size: 2rem;
+        background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 50%, #D81B60 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
-        text-align: center;
-        margin-top: -10px;
-        margin-bottom: 8px;
+        margin: 0;
+        padding: 0;
+        letter-spacing: 0.5px;
+    }
+
+    .header-subtitle {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #8E24AA;
+        margin-top: 4px;
+        margin-bottom: 0;
     }
 
     .stButton>button {
@@ -164,8 +184,13 @@ if 'imprevistos_por_periodo' not in st.session_state:
 if 'prestamos_por_cobrar' not in st.session_state:
     st.session_state.prestamos_por_cobrar = []
 
-# Título limpio arriba sin subtítulos de relleno
-st.markdown('<div class="header-title">Finanzas Tatis</div>', unsafe_allow_html=True)
+# TÍTULO HERMOSO CON ROSAS Y TONOS LILAS/MORADOS
+st.markdown("""
+    <div class="header-container">
+        <h1 class="header-title">🌸 Finanzas Tatis 🌸</h1>
+        <p class="header-subtitle">💜 Tu Panel KiuT de Control Financiero & Deudas 💜</p>
+    </div>
+""", unsafe_allow_html=True)
 
 # Configuración compacta superior
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
@@ -254,6 +279,20 @@ st.sidebar.markdown(f"""
     <div style="font-size: 1.15rem; font-weight: 900; color: #FCE4EC;">{porcentaje_global}% <span style="font-size: 0.85rem; color: #FFE082;">({formato_COP(total_pagado_global)})</span></div>
 </div>
 """, unsafe_allow_html=True)
+
+# BOTÓN RÁPIDO PARA CELULAR (Gasto Hormiga / Imprevisto Flash)
+with st.expander("⚡ AGREGAR GASTO HORMIGA / IMPREVISTO RÁPIDO (Ideal Celular)", expanded=False):
+    with st.form(key="form_flash_celular"):
+        c_fl1, c_fl2 = st.columns([2, 1])
+        with c_fl1:
+            flash_nombre = st.text_input("¿Qué compraste / gastaste?")
+        with c_fl2:
+            flash_valor = st.number_input("Valor (COP)", min_value=0.0, step=5000.0)
+        
+        if st.form_submit_button("💥 Registrar de una vez") and flash_nombre and flash_valor > 0:
+            st.session_state.imprevistos_por_periodo[clave_periodo_actual].append({"nombre": flash_nombre, "valor": flash_valor})
+            st.success("¡Gasto registrado al instante!")
+            st.rerun()
 
 # TABLA RÁPIDA DE OBLIGACIONES
 st.markdown("### ⚡ Control de Pagos de la Quincena")
