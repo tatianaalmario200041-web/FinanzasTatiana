@@ -9,7 +9,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS KiuT: Panel superior 100% fijo (sticky), números gigantes y bordes divinos
+# Estilos CSS KiuT: Panel normal, números gigantes y bordes divinos
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
@@ -59,18 +59,16 @@ st.markdown("""
         transform: translateY(-2px);
     }
     
-    /* PANEL SUPERIOR FIJO (STICKY) PARA PC */
-    .sticky-top-container {
-        position: sticky;
-        top: 0;
-        z-index: 999999;
-        background: rgba(253, 244, 255, 0.98);
+    /* PANEL DE CONTROL NORMAL (FLUJO PRINCIPAL) */
+    .normal-panel-container {
+        background: rgba(255, 255, 255, 0.85);
         backdrop-filter: blur(14px);
-        padding: 15px 15px 5px 15px;
+        padding: 20px;
         border-bottom: 4px solid #DB2777;
-        box-shadow: 0 10px 30px rgba(219, 39, 119, 0.25);
+        box-shadow: 0 8px 25px rgba(219, 39, 119, 0.15);
         margin-bottom: 25px;
-        border-radius: 0 0 24px 24px;
+        border-radius: 24px;
+        border: 2px solid #FBCFE8;
     }
 
     /* Tarjetas de métricas con números gigantes y bordes súper lindos */
@@ -170,7 +168,7 @@ if 'imprevistos_por_periodo' not in st.session_state:
 if 'prestamos_por_cobrar' not in st.session_state:
     st.session_state.prestamos_por_cobrar = []
 
-# --- 2. TÍTULO Y SELECTOR DE QUINCENA ---
+# --- 2. TÍTULO Y SELECTOR DE QUINCENA EN PANTALLA PRINCIPAL ---
 st.markdown('<div class="header-title">✨ Finanzas Tatis ✨</div>', unsafe_allow_html=True)
 st.markdown('<div class="subtitle">Tu Panel KiuT de Control Financiero 🌸💜</div>', unsafe_allow_html=True)
 
@@ -200,7 +198,7 @@ if clave_periodo_actual not in st.session_state.pagos_por_periodo:
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
     st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
 
-# --- 3. SIDEBAR: Configuración y Excel ---
+# --- 3. SIDEBAR: CONFIGURACIÓN BASE (AHORA EN LA BARRA LATERAL IZQUIERDA) ---
 st.sidebar.header("🌸 Configuración Base")
 saldo_actual_banco = st.sidebar.number_input("Saldo Actual en Bancolombia (COP)", value=2800000.0, step=100000.0)
 nomina_quincenal_neta = st.sidebar.number_input("Pago Neto Quincenal Base", value=1294007.0, step=10000.0)
@@ -230,9 +228,9 @@ with st.sidebar.form(key="form_imprevisto_side"):
 
 
 # =========================================================================
-# --- 4. PANEL SUPERIOR FIJO ESTRICTO (STICKY TOP BAR) CON NÚMEROS GIGANTES ---
+# --- 4. PANEL DE CONTROL NORMAL (EN PANTALLA PRINCIPAL) ---
 # =========================================================================
-st.markdown('<div class="sticky-top-container">', unsafe_allow_html=True)
+st.markdown('<div class="normal-panel-container">', unsafe_allow_html=True)
 st.markdown(f"### 💸 Rendimiento Financiero: {clave_periodo_actual}")
 
 col_config1, col_config2 = st.columns(2)
@@ -289,7 +287,7 @@ with col_g2:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown('</div>', unsafe_allow_html=True) # Cierra sticky-top-container
+st.markdown('</div>', unsafe_allow_html=True) # Cierra normal-panel-container
 
 st.markdown("---")
 
