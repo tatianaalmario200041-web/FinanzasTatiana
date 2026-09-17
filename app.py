@@ -138,6 +138,15 @@ st.markdown("""
         margin-bottom: 6px;
         box-shadow: 0 4px 10px rgba(106, 27, 154, 0.2);
     }
+    
+    .liberado-box {
+        background: linear-gradient(135deg, #E1BEE7 0%, #FCE4EC 100%);
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 2px solid #BA68C8;
+        text-align: center;
+        margin-bottom: 10px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -224,13 +233,31 @@ if clave_periodo_actual not in st.session_state.pagos_por_periodo:
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
     st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
 
+# Filtrar obligaciones activas (eliminar si ya se completaron todas las cuotas)
+obligaciones_activas = []
+dinero_liberado_total = 0.0
+
+for item in st.session_state.obligaciones_base:
+    if "total" in item and item["pagadas"] >= item["total"]:
+        # ¡Completado! Se acumula como dinero liberado para nuevos gustitos o ahorro
+        dinero_liberado_total += item["valor"]
+    else:
+        obligaciones_activas.append(item)
+
 # BARRA LATERAL
 st.sidebar.markdown(f"### 💜 {clave_periodo_actual}")
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
-total_pagado_obligaciones_actual = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro and pagos_actuales.get(item["id"], False))
+total_pagado_obligaciones_actual = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and pagos_actuales.get(item["id"], False))
 total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos_por_periodo[clave_periodo_actual])
 quincena_que_queda = presupuesto_quincena_inicial - total_pagado_obligaciones_actual - total_imprevistos
+
+st.sidebar.markdown(f'''
+    <div class="liberado-box">
+        <span style="font-size:0.75rem; font-weight:800; color:#6A1B9A;">✨ Dinero Liberado por Deudas Terminadas ✨</span><br>
+        <span style="font-size:1.1rem; font-weight:900; color:#9C27B0;">{formato_COP(dinero_liberado_total)}</span>
+    </div>
+''', unsafe_allow_html=True)
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
@@ -261,25 +288,57 @@ st.sidebar.markdown(f'''
     </div>
 ''', unsafe_allow_html=True)
 
-total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones_base)
-total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("pagadas", False) else 0) for item in st.session_state.obligaciones_base)
+total_deuda_global = sum(item["valor"] * (item["total"] - item["pagadas"]) if "total" in item else item["valor"] for item in obligaciones_activas)
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">👑 Total Global Deudas</div>
+    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">👑 Deuda Global Pendiente</div>
     <div style="font-size: 1.2rem; font-weight: 900; color: #FFFFFF; margin-top:2px;">{formato_COP(total_deuda_global)}</div>
 </div>
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# DISTRIBUCIÓN PRINCIPAL
+# DISTRIBUCIÓN PRINCIPAL (GRÁFICO A LA IZQUIERDA)
 # -------------------------------------------------------------
 st.markdown("<h3 style='color: #6A1B9A; font-weight: 800; margin-top: 5px;'>⚡ Control de Pagos de la Quincena</h3>", unsafe_allow_html=True)
 
-col_izq_tabla, col_der_grafico = st.columns([1.2, 1], gap="medium")
+col_der_grafico, col_izq_tabla = st.columns([1, 1.3], gap="medium")
+
+with col_der_grafico:
+    st.markdown("<h4 style='color: #7B1FA2; font-weight: 800; text-align: center; margin-bottom: 5px;'>💖 Distribución del Dinero</h4>", unsafe_allow_html=True)
+    
+    total_pagado_val = total_pagado_obligaciones_actual
+    total_pend_val = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))
+    total_hormiga_val = total_imprevistos
+    saldo_disponible_val = max(0, quincena_que_queda)
+
+    df_grafico = pd.DataFrame({
+        'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
+        'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val],
+        'Color': ['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
+    })
+
+    base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=75, outerRadius=115, padAngle=4, cornerRadius=8).encode(
+        theta=alt.Theta(field="Valor", type="quantitative"),
+        color=alt.Color(
+            field="Categoría", 
+            type="nominal", 
+            scale=alt.Scale(
+                domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
+                range=['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
+            ), 
+            legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=12, labelColor="#4A3B5C")
+        ),
+        tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
+    ).properties(
+        width=290,
+        height=290
+    )
+
+    st.altair_chart(base_chart, use_container_width=True)
 
 with col_izq_tabla:
-    for item in st.session_state.obligaciones_base:
+    for item in obligaciones_activas:
         if item["periodo"] != periodo_filtro:
             continue
         
@@ -313,40 +372,6 @@ with col_izq_tabla:
                 st.rerun()
                 
         st.markdown('</div>', unsafe_allow_html=True)
-
-with col_der_grafico:
-    st.markdown("<h4 style='color: #7B1FA2; font-weight: 800; text-align: center; margin-bottom: 5px;'>💖 Distribución del Dinero</h4>", unsafe_allow_html=True)
-    
-    total_pagado_val = total_pagado_obligaciones_actual
-    total_pend_val = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))
-    total_hormiga_val = total_imprevistos
-    saldo_disponible_val = max(0, quincena_que_queda)
-
-    df_grafico = pd.DataFrame({
-        'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
-        'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val],
-        # Paleta personalizada: Morado oscuro, Rosa fucsia, Lila suave, Rosa pastel
-        'Color': ['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
-    })
-
-    base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=70, outerRadius=110, padAngle=4, cornerRadius=8).encode(
-        theta=alt.Theta(field="Valor", type="quantitative"),
-        color=alt.Color(
-            field="Categoría", 
-            type="nominal", 
-            scale=alt.Scale(
-                domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
-                range=['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
-            ), 
-            legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=12, labelColor="#4A3B5C")
-        ),
-        tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
-    ).properties(
-        width=280,
-        height=280
-    )
-
-    st.altair_chart(base_chart, use_container_width=True)
 
 st.markdown("<hr style='border: 1px solid #E1BEE7; margin: 20px 0;'>", unsafe_allow_html=True)
 
