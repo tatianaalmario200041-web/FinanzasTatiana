@@ -1,6 +1,5 @@
 import streamlit as st
 import pandas as pd
-import datetime
 
 st.set_page_config(
     page_title="Finanzas Tatis",
@@ -15,8 +14,13 @@ st.markdown("""
     
     html, body, [class*="css"] {
         font-family: 'Montserrat', sans-serif;
-        font-size: 14px;
+        font-size: 13.5px;
         color: #4A3B5C;
+    }
+    
+    .block-container {
+        padding-top: 1rem !important;
+        padding-bottom: 1rem !important;
     }
     
     .main {
@@ -24,8 +28,8 @@ st.markdown("""
     }
     
     [data-testid="stSidebar"] {
-        min-width: 380px;
-        max-width: 410px;
+        min-width: 360px;
+        max-width: 390px;
         background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
         border-right: 2px solid #D1C4E9;
     }
@@ -35,29 +39,31 @@ st.markdown("""
         top: 0px;
         height: 100vh;
         overflow-y: auto;
-        padding-bottom: 2rem;
+        padding-bottom: 1rem;
+        padding-top: 1rem;
     }
     
     .header-title {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 2.2rem;
+        font-size: 1.8rem;
         background: linear-gradient(135deg, #7B1FA2 0%, #9C27B0 50%, #E91E63 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         text-align: center;
-        margin-bottom: 0px;
+        margin-top: -10px;
+        margin-bottom: 8px;
     }
 
     .stButton>button {
         background: linear-gradient(135deg, #AB47BC 0%, #EC407A 100%);
         color: white;
-        border-radius: 10px;
-        padding: 0.4rem 0.8rem;
+        border-radius: 8px;
+        padding: 0.25rem 0.6rem;
         font-weight: 700;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
         border: none;
-        box-shadow: 0 3px 10px rgba(171, 71, 188, 0.2);
+        box-shadow: 0 2px 6px rgba(171, 71, 188, 0.2);
         width: 100%;
     }
     .stButton>button:hover {
@@ -67,61 +73,61 @@ st.markdown("""
 
     .metric-card-sidebar {
         background-color: #FFFFFF;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(156, 39, 176, 0.08);
+        padding: 8px 10px;
+        border-radius: 10px;
+        box-shadow: 0 3px 10px rgba(156, 39, 176, 0.08);
         border: 2px solid #CE93D8;
         text-align: center;
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
     .metric-value-gigante {
         color: #7B1FA2; 
-        font-size: 1.45rem; 
+        font-size: 1.3rem; 
         font-weight: 900; 
-        margin: 2px 0;
+        margin: 1px 0;
     }
 
     .config-box-compact {
         background: rgba(255, 255, 255, 0.9);
-        padding: 12px 16px;
-        border-radius: 14px;
+        padding: 8px 12px;
+        border-radius: 10px;
         border: 1px solid #E1BEE7;
-        box-shadow: 0 4px 12px rgba(186, 104, 200, 0.08);
-        margin-bottom: 12px;
+        box-shadow: 0 3px 10px rgba(186, 104, 200, 0.06);
+        margin-bottom: 10px;
     }
     
     .kiut-card {
         background-color: #FFFFFF;
-        padding: 12px 16px;
-        border-radius: 12px;
+        padding: 8px 12px;
+        border-radius: 10px;
         border: 1px solid #E1BEE7;
-        box-shadow: 0 3px 10px rgba(156, 39, 176, 0.05);
-        margin-bottom: 8px;
+        box-shadow: 0 2px 8px rgba(156, 39, 176, 0.04);
+        margin-bottom: 6px;
     }
 
     .global-dark-box-sidebar {
         background: linear-gradient(135deg, #6A1B9A 0%, #8E24AA 100%);
-        padding: 10px;
-        border-radius: 12px;
+        padding: 8px;
+        border-radius: 10px;
         color: white;
         text-align: center;
         border: 2px solid #CE93D8;
-        margin-top: 6px;
-        margin-bottom: 6px;
+        margin-top: 4px;
+        margin-bottom: 4px;
     }
 
     .progress-container {
         width: 100%;
         background-color: #F3E5F5;
-        border-radius: 8px;
-        height: 10px;
-        margin: 4px 0;
+        border-radius: 6px;
+        height: 8px;
+        margin: 3px 0;
         overflow: hidden;
     }
     .progress-bar-kiut {
         height: 100%;
         background: linear-gradient(135deg, #AB47BC 0%, #EC407A 100%);
-        border-radius: 8px;
+        border-radius: 6px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -158,21 +164,22 @@ if 'imprevistos_por_periodo' not in st.session_state:
 if 'prestamos_por_cobrar' not in st.session_state:
     st.session_state.prestamos_por_cobrar = []
 
+# Título limpio arriba sin subtítulos de relleno
 st.markdown('<div class="header-title">Finanzas Tatis</div>', unsafe_allow_html=True)
 
-# Configuración compacta arriba
+# Configuración compacta superior
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2, col_cfg3, col_cfg4, col_cfg5 = st.columns([2, 2, 2, 2.2, 2.2])
 with col_cfg1:
-    saldo_actual_banco = st.number_input("Banco (COP)", value=2800000.0, step=100000.0)
+    saldo_actual_banco = st.number_input("Banco (COP)", value=2800000.0, step=100000.0, label_visibility="collapsed")
 with col_cfg2:
-    nomina_quincenal_neta = st.number_input("Nómina Base", value=2200000.0, step=10000.0)
+    nomina_quincenal_neta = st.number_input("Nómina Base", value=2200000.0, step=10000.0, label_visibility="collapsed")
 with col_cfg3:
-    ingresos_extra = st.number_input("Extras (COP)", value=0.0, step=10000.0)
+    ingresos_extra = st.number_input("Extras (COP)", value=0.0, step=10000.0, label_visibility="collapsed")
 with col_cfg4:
-    mes_seleccionado = st.selectbox("Mes", ["Marzo 2026", "Abril 2026", "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026", "Septiembre 2026"], key="select_mes_main")
+    mes_seleccionado = st.selectbox("Mes", ["Marzo 2026", "Abril 2026", "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026", "Septiembre 2026"], key="select_mes_main", label_visibility="collapsed")
 with col_cfg5:
-    quincena_tipo = st.selectbox("Quincena", ["Mitad de Mes (Día 15)", "Fin de Mes (Día 20)"], key="select_quincena_main")
+    quincena_tipo = st.selectbox("Quincena", ["Mitad de Mes (Día 15)", "Fin de Mes (Día 20)"], key="select_quincena_main", label_visibility="collapsed")
 st.markdown('</div>', unsafe_allow_html=True)
 
 periodo_filtro = "Mitad de Mes" if "Mitad" in quincena_tipo else "Fin de Mes"
@@ -193,21 +200,21 @@ quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pag
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h5 style="color:#6A1B9A; margin:0;">📥 Ingresos Totales</h5>
+        <h6 style="color:#6A1B9A; margin:0;">📥 Ingresos Totales</h6>
         <div class="metric-value-gigante">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h5 style="color:#7B1FA2; margin:0;">📤 Pagado Periodo</h5>
+        <h6 style="color:#7B1FA2; margin:0;">📤 Pagado Periodo</h6>
         <div class="metric-value-gigante">{formato_COP(total_pagado_obligaciones_actual)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h5 style="color:#AD1457; margin:0;">🚨 Imprevistos</h5>
+        <h6 style="color:#AD1457; margin:0;">🚨 Imprevistos</h6>
         <div class="metric-value-gigante">{formato_COP(total_imprevistos)}</div>
     </div>
 ''', unsafe_allow_html=True)
@@ -215,8 +222,8 @@ st.sidebar.markdown(f'''
 color_queda = "#00897B" if quincena_que_queda >= 0 else "#E53935"
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar" style="border: 2px solid {color_queda};">
-        <h5 style="color:{color_queda}; margin:0;">✨ QUEDA ✨</h5>
-        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.6rem;">{formato_COP(quincena_que_queda)}</div>
+        <h6 style="color:{color_queda}; margin:0;">✨ QUEDA ✨</h6>
+        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
@@ -236,15 +243,15 @@ porcentaje_global = int((total_pagado_global / total_deuda_global) * 100) if tot
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">👑 Total Global Deudas</div>
-    <div style="font-size: 1.3rem; font-weight: 900; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
+    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">👑 Total Global Deudas</div>
+    <div style="font-size: 1.15rem; font-weight: 900; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
 </div>
 """, unsafe_allow_html=True)
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">🚀 Avance Global</div>
-    <div style="font-size: 1.3rem; font-weight: 900; color: #FCE4EC;">{porcentaje_global}% <span style="font-size: 0.9rem; color: #FFE082;">({formato_COP(total_pagado_global)})</span></div>
+    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">🚀 Avance Global</div>
+    <div style="font-size: 1.15rem; font-weight: 900; color: #FCE4EC;">{porcentaje_global}% <span style="font-size: 0.85rem; color: #FFE082;">({formato_COP(total_pagado_global)})</span></div>
 </div>
 """, unsafe_allow_html=True)
 
@@ -265,11 +272,11 @@ for item in st.session_state.obligaciones_base:
     item_id = item["id"]
     esta_pagado = pagos_actuales.get(item_id, False)
     
-    st.markdown('<div class="kiut-card" style="padding: 8px 14px; margin-bottom: 6px;">', unsafe_allow_html=True)
+    st.markdown('<div class="kiut-card" style="padding: 6px 10px; margin-bottom: 4px;">', unsafe_allow_html=True)
     c1, c2, c3, c4, c5 = st.columns([3.5, 2, 2, 1.5, 1.5])
     
     with c1:
-        st.markdown(f"**{item['nombre']}** <br><span style='font-size:0.8rem; color:#8E24AA;'>{item['tipo']}</span>", unsafe_allow_html=True)
+        st.markdown(f"**{item['nombre']}** <span style='font-size:0.75rem; color:#8E24AA;'>({item['tipo']})</span>", unsafe_allow_html=True)
     with c2:
         st.markdown(f"**{formato_COP(item['valor'])}**", unsafe_allow_html=True)
     with c3:
