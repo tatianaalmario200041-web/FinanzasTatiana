@@ -23,8 +23,8 @@ st.markdown("""
         padding-top: 0.8rem !important;
         padding-bottom: 2rem !important;
         max-width: 100% !important;
-        padding-left: 1rem !important;
-        padding-right: 1rem !important;
+        padding-left: 1.5rem !important;
+        padding-right: 1.5rem !important;
     }
     
     .main {
@@ -32,8 +32,8 @@ st.markdown("""
     }
     
     [data-testid="stSidebar"] {
-        min-width: 320px;
-        max-width: 360px;
+        min-width: 340px;
+        max-width: 380px;
         background: linear-gradient(180deg, #F3E5F5 0%, #E1BEE7 100%);
         border-right: 2px solid #BA68C8;
     }
@@ -104,7 +104,7 @@ st.markdown("""
     }
     .metric-value-gigante {
         color: #7B1FA2; 
-        font-size: 1.4rem; 
+        font-size: 1.3rem; 
         font-weight: 900; 
         margin: 2px 0;
     }
@@ -120,11 +120,11 @@ st.markdown("""
     
     .kiut-card-compact {
         background-color: #FFFFFF;
-        padding: 6px 12px;
-        border-radius: 10px;
+        padding: 10px 14px;
+        border-radius: 12px;
         border: 1px solid #E1BEE7;
-        box-shadow: 0 2px 6px rgba(156, 39, 176, 0.05);
-        margin-bottom: 4px;
+        box-shadow: 0 3px 8px rgba(156, 39, 176, 0.06);
+        margin-bottom: 8px;
     }
 
     .global-dark-box-sidebar {
@@ -145,7 +145,7 @@ st.markdown("""
         border-radius: 10px;
         border: 2px solid #BA68C8;
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 8px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -182,7 +182,7 @@ if 'imprevistos_por_periodo' not in st.session_state:
 if 'prestamos_por_cobrar' not in st.session_state:
     st.session_state.prestamos_por_cobrar = []
 
-# TÍTULO
+# TÍTULO PRINCIPAL
 st.markdown("""
     <div class="header-container">
         <h1 class="header-title">🌸 Finanzas Tatis 🌸</h1>
@@ -233,28 +233,31 @@ if clave_periodo_actual not in st.session_state.pagos_por_periodo:
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
     st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
 
-# Filtrar obligaciones activas (eliminar si ya se completaron todas las cuotas)
+# Filtrar obligaciones activas y calcular dinero liberado automáticamente
 obligaciones_activas = []
 dinero_liberado_total = 0.0
 
 for item in st.session_state.obligaciones_base:
     if "total" in item and item["pagadas"] >= item["total"]:
-        # ¡Completado! Se acumula como dinero liberado para nuevos gustitos o ahorro
         dinero_liberado_total += item["valor"]
     else:
         obligaciones_activas.append(item)
 
-# BARRA LATERAL
-st.sidebar.markdown(f"### 💜 {clave_periodo_actual}")
+# CÁLCULOS FINANCIEROS
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
 total_pagado_obligaciones_actual = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and pagos_actuales.get(item["id"], False))
 total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos_por_periodo[clave_periodo_actual])
 quincena_que_queda = presupuesto_quincena_inicial - total_pagado_obligaciones_actual - total_imprevistos
 
+# -------------------------------------------------------------
+# BARRA LATERAL (RESUMEN + GRÁFICO DE DONA A LA IZQUIERDA)
+# -------------------------------------------------------------
+st.sidebar.markdown(f"### 💜 {clave_periodo_actual}")
+
 st.sidebar.markdown(f'''
     <div class="liberado-box">
-        <span style="font-size:0.75rem; font-weight:800; color:#6A1B9A;">✨ Dinero Liberado por Deudas Terminadas ✨</span><br>
+        <span style="font-size:0.75rem; font-weight:800; color:#6A1B9A;">✨ Dinero Liberado (Deudas Terminadas) ✨</span><br>
         <span style="font-size:1.1rem; font-weight:900; color:#9C27B0;">{formato_COP(dinero_liberado_total)}</span>
     </div>
 ''', unsafe_allow_html=True)
@@ -284,7 +287,7 @@ color_queda = "#8E24AA" if quincena_que_queda >= 0 else "#C2185B"
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar" style="border: 2.5px solid {color_queda}; background: #FCE4EC;">
         <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ LO QUE QUEDA ✨</h6>
-        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.5rem;">{formato_COP(quincena_que_queda)}</div>
+        <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.4rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
 ''', unsafe_allow_html=True)
 
@@ -293,71 +296,70 @@ total_deuda_global = sum(item["valor"] * (item["total"] - item["pagadas"]) if "t
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
     <div style="font-size: 0.8rem; font-weight: 800; text-transform: uppercase;">👑 Deuda Global Pendiente</div>
-    <div style="font-size: 1.2rem; font-weight: 900; color: #FFFFFF; margin-top:2px;">{formato_COP(total_deuda_global)}</div>
+    <div style="font-size: 1.1rem; font-weight: 900; color: #FFFFFF; margin-top:2px;">{formato_COP(total_deuda_global)}</div>
 </div>
 """, unsafe_allow_html=True)
 
+# GRÁFICO DE DONA EN LA BARRA LATERAL IZQUIERDA
+st.sidebar.markdown("<hr style='border: 1px solid #D1C4E9; margin: 15px 0;'>", unsafe_allow_html=True)
+st.sidebar.markdown("<h4 style='color: #7B1FA2; font-weight: 800; text-align: center; margin-bottom: 2px;'>💖 Distribución del Dinero</h4>", unsafe_allow_html=True)
+
+total_pagado_val = total_pagado_obligaciones_actual
+total_pend_val = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))
+total_hormiga_val = total_imprevistos
+saldo_disponible_val = max(0, quincena_que_queda)
+
+df_grafico = pd.DataFrame({
+    'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
+    'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val],
+    'Color': ['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
+})
+
+base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=55, outerRadius=95, padAngle=4, cornerRadius=8).encode(
+    theta=alt.Theta(field="Valor", type="quantitative"),
+    color=alt.Color(
+        field="Categoría", 
+        type="nominal", 
+        scale=alt.Scale(
+            domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
+            range=['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
+        ), 
+        legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=11, labelColor="#4A3B5C")
+    ),
+    tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
+).properties(
+    width=260,
+    height=260
+)
+
+st.sidebar.altair_chart(base_chart, use_container_width=True)
+
+
 # -------------------------------------------------------------
-# DISTRIBUCIÓN PRINCIPAL (GRÁFICO A LA IZQUIERDA)
+# PANEL CENTRAL: CONTROL DE PAGOS
 # -------------------------------------------------------------
 st.markdown("<h3 style='color: #6A1B9A; font-weight: 800; margin-top: 5px;'>⚡ Control de Pagos de la Quincena</h3>", unsafe_allow_html=True)
 
-col_der_grafico, col_izq_tabla = st.columns([1, 1.3], gap="medium")
-
-with col_der_grafico:
-    st.markdown("<h4 style='color: #7B1FA2; font-weight: 800; text-align: center; margin-bottom: 5px;'>💖 Distribución del Dinero</h4>", unsafe_allow_html=True)
+for item in obligaciones_activas:
+    if item["periodo"] != periodo_filtro:
+        continue
     
-    total_pagado_val = total_pagado_obligaciones_actual
-    total_pend_val = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))
-    total_hormiga_val = total_imprevistos
-    saldo_disponible_val = max(0, quincena_que_queda)
+    item_id = item["id"]
+    esta_pagado = pagos_actuales.get(item_id, False)
+    
+    st.markdown('<div class="kiut-card-compact">', unsafe_allow_html=True)
+    c1, c2, c3 = st.columns([3, 1.5, 1])
+    
+    with c1:
+        info_sec = f"Cuota {item['pagadas']}/{item['total']}" if "total" in item else f"Vence: {item.get('fecha_pago', '-')}"
+        st.markdown(f"<span style='font-weight:800; font-size:14px; color:#4A3B5C;'>{item['nombre']}</span><br><span style='font-size:0.75rem; color:#8E24AA; font-weight:700;'>{item['tipo']} • {info_sec}</span>", unsafe_allow_html=True)
+            
+    with c2:
+        estado_txt = "✅ Pagado" if esta_pagado else "⏳ Pendiente"
+        color_est = "#7B1FA2" if esta_pagado else "#D81B60"
+        st.markdown(f"<div style='text-align: right;'><span style='font-weight:900; font-size:14px; color:#7B1FA2;'>{formato_COP(item['valor'])}</span><br><span style='font-weight:700; color:{color_est}; font-size:11.5px;'>{estado_txt}</span></div>", unsafe_allow_html=True)
 
-    df_grafico = pd.DataFrame({
-        'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
-        'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val],
-        'Color': ['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
-    })
-
-    base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=75, outerRadius=115, padAngle=4, cornerRadius=8).encode(
-        theta=alt.Theta(field="Valor", type="quantitative"),
-        color=alt.Color(
-            field="Categoría", 
-            type="nominal", 
-            scale=alt.Scale(
-                domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
-                range=['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
-            ), 
-            legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=12, labelColor="#4A3B5C")
-        ),
-        tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
-    ).properties(
-        width=290,
-        height=290
-    )
-
-    st.altair_chart(base_chart, use_container_width=True)
-
-with col_izq_tabla:
-    for item in obligaciones_activas:
-        if item["periodo"] != periodo_filtro:
-            continue
-        
-        item_id = item["id"]
-        esta_pagado = pagos_actuales.get(item_id, False)
-        
-        st.markdown('<div class="kiut-card-compact">', unsafe_allow_html=True)
-        c1, c2 = st.columns([2.3, 1.2])
-        
-        with c1:
-            info_sec = f"Cuota {item['pagadas']}/{item['total']}" if "total" in item else f"Vence: {item.get('fecha_pago', '-')}"
-            st.markdown(f"<span style='font-weight:800; font-size:13.5px; color:#4A3B5C;'>{item['nombre']}</span><br><span style='font-size:0.75rem; color:#8E24AA; font-weight:700;'>{item['tipo']} • {info_sec}</span>", unsafe_allow_html=True)
-                
-        with c2:
-            estado_txt = "✅ Pagado" if esta_pagado else "⏳ Pend."
-            color_est = "#7B1FA2" if esta_pagado else "#D81B60"
-            st.markdown(f"<div style='text-align: right;'><span style='font-weight:900; font-size:13.5px; color:#7B1FA2;'>{formato_COP(item['valor'])}</span><br><span style='font-weight:700; color:{color_est}; font-size:11.5px;'>{estado_txt}</span></div>", unsafe_allow_html=True)
-
-        st.markdown("<div style='margin-top: 3px;'></div>", unsafe_allow_html=True)
+    with c3:
         if not esta_pagado:
             if st.button("Pagar ✅", key=f"pagar_{clave_periodo_actual}_{item_id}"):
                 st.session_state.pagos_por_periodo[clave_periodo_actual][item_id] = True
@@ -370,12 +372,12 @@ with col_izq_tabla:
                 if "total" in item and item["pagadas"] > 0:
                     item["pagadas"] -= 1
                 st.rerun()
-                
-        st.markdown('</div>', unsafe_allow_html=True)
+            
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown("<hr style='border: 1px solid #E1BEE7; margin: 20px 0;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border: 1px solid #E1BEE7; margin: 25px 0;'>", unsafe_allow_html=True)
 
-# SECCIÓN INFERIOR
+# PESTAÑAS INFERIORES
 tab_deudas, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Excel"])
 
 with tab_deudas:
