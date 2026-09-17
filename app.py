@@ -197,7 +197,7 @@ with st.expander("✨ ☕ Registrar Gasto Hormiga / Imprevisto Rápido (Click Aq
             st.rerun()
 st.markdown('</div>', unsafe_allow_html=True)
 
-# CONFIGURACIÓN SUPERIOR SIMPLIFICADA Y AUTOMATIZADA CON EL NETO REAL DE QUINCENA ($1.294.007)
+# CONFIGURACIÓN SUPERIOR
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2 = st.columns(2)
 with col_cfg1:
@@ -209,7 +209,6 @@ with col_cfg1:
 
 with col_cfg2:
     st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Nómina Neta Quincenal (Calculada)</span>", unsafe_allow_html=True)
-    # Valor exacto calculado con base en tu desprendible de pago ($1.294.007)
     nomina_quincenal_neta = st.number_input("Nómina Neta", value=1294007.0, step=10000.0, label_visibility="collapsed")
     
     st.markdown("<span style='font-size:0.8rem; font-weight:700; color:#7B1FA2;'>Quincena</span>", unsafe_allow_html=True)
@@ -254,9 +253,9 @@ st.sidebar.markdown(f'''
     </div>
 ''', unsafe_allow_html=True)
 
-color_queda = "#00897B" if quincena_que_queda >= 0 else "#E53935"
+color_queda = "#8E24AA" if quincena_que_queda >= 0 else "#C2185B"
 st.sidebar.markdown(f'''
-    <div class="metric-card-sidebar" style="border: 2.5px solid {color_queda}; background: #FFFDE7;">
+    <div class="metric-card-sidebar" style="border: 2.5px solid {color_queda}; background: #FCE4EC;">
         <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ LO QUE QUEDA ✨</h6>
         <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.5rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
@@ -264,7 +263,6 @@ st.sidebar.markdown(f'''
 
 total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones_base)
 total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("pagadas", False) else 0) for item in st.session_state.obligaciones_base)
-porcentaje_global = int((total_pagado_global / total_deuda_global) * 100) if total_deuda_global > 0 else 0
 
 st.sidebar.markdown(f"""
 <div class="global-dark-box-sidebar">
@@ -274,7 +272,7 @@ st.sidebar.markdown(f"""
 """, unsafe_allow_html=True)
 
 # -------------------------------------------------------------
-# DISTRIBUCIÓN PRINCIPAL: LISTA A LA IZQUIERDA Y SÚPER GRÁFICO A LA DERECHA
+# DISTRIBUCIÓN PRINCIPAL
 # -------------------------------------------------------------
 st.markdown("<h3 style='color: #6A1B9A; font-weight: 800; margin-top: 5px;'>⚡ Control de Pagos de la Quincena</h3>", unsafe_allow_html=True)
 
@@ -297,7 +295,7 @@ with col_izq_tabla:
                 
         with c2:
             estado_txt = "✅ Pagado" if esta_pagado else "⏳ Pend."
-            color_est = "#2E7D32" if esta_pagado else "#EF6C00"
+            color_est = "#7B1FA2" if esta_pagado else "#D81B60"
             st.markdown(f"<div style='text-align: right;'><span style='font-weight:900; font-size:13.5px; color:#7B1FA2;'>{formato_COP(item['valor'])}</span><br><span style='font-weight:700; color:{color_est}; font-size:11.5px;'>{estado_txt}</span></div>", unsafe_allow_html=True)
 
         st.markdown("<div style='margin-top: 3px;'></div>", unsafe_allow_html=True)
@@ -327,23 +325,32 @@ with col_der_grafico:
     df_grafico = pd.DataFrame({
         'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
         'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val],
-        'Color': ['#AB47BC', '#FFB74D', '#EC407A', '#26A69A']
+        # Paleta personalizada: Morado oscuro, Rosa fucsia, Lila suave, Rosa pastel
+        'Color': ['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
     })
 
-    base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=65, outerRadius=105, padAngle=3, cornerRadius=6).encode(
+    base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=70, outerRadius=110, padAngle=4, cornerRadius=8).encode(
         theta=alt.Theta(field="Valor", type="quantitative"),
-        color=alt.Color(field="Categoría", type="nominal", scale=alt.Scale(domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], range=['#AB47BC', '#FFB74D', '#EC407A', '#26A69A']), legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=12)),
+        color=alt.Color(
+            field="Categoría", 
+            type="nominal", 
+            scale=alt.Scale(
+                domain=['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'], 
+                range=['#7B1FA2', '#E91E63', '#BA68C8', '#F48FB1']
+            ), 
+            legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=12, labelColor="#4A3B5C")
+        ),
         tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
     ).properties(
-        width=270,
-        height=270
+        width=280,
+        height=280
     )
 
     st.altair_chart(base_chart, use_container_width=True)
 
 st.markdown("<hr style='border: 1px solid #E1BEE7; margin: 20px 0;'>", unsafe_allow_html=True)
 
-# SECCIÓN INFERIOR EN TABS LIMPIAS
+# SECCIÓN INFERIOR
 tab_deudas, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Excel"])
 
 with tab_deudas:
