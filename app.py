@@ -76,7 +76,7 @@ st.markdown("""
     /* Tarjetas de métricas con números gigantes y bordes súper lindos */
     .metric-card-big {
         background-color: #FFFFFF;
-        padding: 20px 10px;
+        padding: 22px 10px;
         border-radius: 22px;
         box-shadow: 0 8px 22px rgba(219, 39, 119, 0.15);
         border: 3px solid #EC4899;
@@ -249,14 +249,14 @@ quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pag
 # 4 Tarjetas principales con NÚMEROS GIGANTES Y BORDES LINDOS
 col_q1, col_q2, col_q3, col_q4 = st.columns(4)
 with col_q1:
-    st.markdown(f'<div class="metric-card-big"><h4 style="color:#9333EA; font-size:1rem; font-weight:700;">📥 Ingresos</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h1></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#9333EA; font-size:1.05rem; font-weight:700;">📥 Ingresos</h4><h1 style="color:#1E293B; font-size:2.2rem; font-weight:800; margin:10px 0;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h1></div>', unsafe_allow_html=True)
 with col_q2:
-    st.markdown(f'<div class="metric-card-big"><h4 style="color:#DB2777; font-size:1rem; font-weight:700;">📤 Pagado</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(total_pagado_obligaciones_actual)}</h1></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#DB2777; font-size:1.05rem; font-weight:700;">📤 Pagado</h4><h1 style="color:#1E293B; font-size:2.2rem; font-weight:800; margin:10px 0;">{formato_COP(total_pagado_obligaciones_actual)}</h1></div>', unsafe_allow_html=True)
 with col_q3:
-    st.markdown(f'<div class="metric-card-big"><h4 style="color:#D97706; font-size:1rem; font-weight:700;">🚨 Imprevistos</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(total_imprevistos)}</h1></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#D97706; font-size:1.05rem; font-weight:700;">🚨 Imprevistos</h4><h1 style="color:#1E293B; font-size:2.2rem; font-weight:800; margin:10px 0;">{formato_COP(total_imprevistos)}</h1></div>', unsafe_allow_html=True)
 with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
-    st.markdown(f'<div class="metric-card-big" style="border: 3px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1rem; font-weight:700;">✨ QUEDA</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(quincena_que_queda)}</h1></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big" style="border: 3px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1.05rem; font-weight:700;">✨ QUEDA</h4><h1 style="color:#1E293B; font-size:2.2rem; font-weight:800; margin:10px 0;">{formato_COP(quincena_que_queda)}</h1></div>', unsafe_allow_html=True)
 
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
 porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
@@ -277,15 +277,15 @@ col_g1, col_g2 = st.columns(2)
 with col_g1:
     st.markdown(f"""
     <div class="global-dark-box">
-        <div style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">👑 Total Global de Deudas</div>
-        <div style="font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
+        <div style="font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">👑 Total Global de Deudas</div>
+        <div style="font-size: 2.2rem; font-weight: 800; margin-top: 6px; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
     </div>
     """, unsafe_allow_html=True)
 with col_g2:
     st.markdown(f"""
     <div class="global-dark-box">
-        <div style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">🚀 Porcentaje de Avance Total</div>
-        <div style="font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: #FDE047;">{porcentaje_global}% <span style="font-size: 1rem; color: #FFF;">({formato_COP(total_pagado_global)})</span></div>
+        <div style="font-size: 1rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">🚀 Porcentaje de Avance Total</div>
+        <div style="font-size: 2.2rem; font-weight: 800; margin-top: 6px; color: #FDE047;">{porcentaje_global}% <span style="font-size: 1.2rem; color: #FFF;">({formato_COP(total_pagado_global)})</span></div>
     </div>
     """, unsafe_allow_html=True)
 
