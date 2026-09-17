@@ -66,11 +66,11 @@ st.markdown("""
         background: linear-gradient(135deg, #8E24AA 0%, #D81B60 100%);
         color: white;
         border-radius: 8px;
-        padding: 0.25rem 0.6rem;
+        padding: 0.2rem 0.5rem;
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         border: none;
-        box-shadow: 0 2px 8px rgba(142, 36, 170, 0.3);
+        box-shadow: 0 2px 6px rgba(142, 36, 170, 0.3);
         width: 100%;
         transition: all 0.2s ease;
     }
@@ -107,15 +107,11 @@ st.markdown("""
     
     .kiut-card-grid {
         background-color: rgba(255, 255, 255, 0.96);
-        padding: 10px 12px;
+        padding: 12px 14px;
         border-radius: 10px;
         border: 1.5px solid #CE93D8;
         box-shadow: 0 2px 8px rgba(123, 31, 162, 0.12);
-        margin-bottom: 10px;
-        min-height: 125px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
+        margin-bottom: 12px;
     }
 
     .global-dark-box-sidebar {
@@ -307,7 +303,6 @@ st.markdown("<h4 style='color: #4A148C; font-weight: 800; margin-top: 5px;'>⚡ 
 
 items_filtrados = [item for item in obligaciones_activas if item["periodo"] == periodo_filtro]
 
-# Crear filas de 3 columnas para evitar scroll vertical excesivo
 cols_por_fila = 3
 for i in range(0, len(items_filtrados), cols_por_fila):
     cols = st.columns(cols_por_fila)
@@ -326,7 +321,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
                 st.markdown(f"""
                     <div style='font-weight:800; font-size:13.5px; color:#3E2723; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;'>{item['nombre']}</div>
                     <div style='font-size:0.7rem; color:#8E24AA; font-weight:700;'>{item['tipo']} • {info_sec}</div>
-                    <div style='font-weight:900; font-size:13px; color:#6A1B9A; margin-top:2px;'>{formato_COP(item['valor'])} <span style='font-weight:700; color:{color_est}; font-size:11px; float:right;'>{estado_txt}</span></div>
+                    <div style='font-weight:900; font-size:13px; color:#6A1B9A; margin-top:2px; margin-bottom: 8px;'>{formato_COP(item['valor'])} <span style='font-weight:700; color:{color_est}; font-size:11px; float:right;'>{estado_txt}</span></div>
                 """, unsafe_allow_html=True)
                 
                 if not esta_pagado:
@@ -413,4 +408,3 @@ with tab_extras:
             df_export = pd.DataFrame(st.session_state.obligaciones_base)
             csv_data = df_export.to_csv(index=False).encode('utf-8')
             st.download_button("Confirmar Descarga", data=csv_data, file_name="Finanzas_Tatis_Pro.csv", mime="text/csv")
-            
