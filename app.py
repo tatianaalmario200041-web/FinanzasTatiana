@@ -9,14 +9,14 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Estilos CSS KiuT optimizados: Tarjetas hermosas y panel superior fijo
+# Estilos CSS KiuT: Panel superior 100% fijo (sticky), números gigantes y bordes divinos
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
     
     html, body, [class*="css"] {
         font-family: 'Montserrat', sans-serif;
-        font-size: 17px;
+        font-size: 16px;
     }
     
     .main {
@@ -26,7 +26,7 @@ st.markdown("""
     .header-title {
         font-family: 'Montserrat', sans-serif;
         font-weight: 800;
-        font-size: 3rem;
+        font-size: 2.5rem;
         background: linear-gradient(135deg, #9333EA 0%, #DB2777 50%, #F43F5E 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -38,19 +38,20 @@ st.markdown("""
         text-align: center;
         color: #831843;
         font-weight: 600;
-        font-size: 1.2rem;
-        margin-bottom: 1.5rem;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
     }
 
     .stButton>button {
         background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
         color: white;
         border-radius: 14px;
-        padding: 0.5rem 1.2rem;
+        padding: 0.5rem 1rem;
         font-weight: 700;
-        font-size: 1rem;
+        font-size: 0.95rem;
         border: none;
         box-shadow: 0 4px 10px rgba(236, 72, 153, 0.3);
+        width: 100%;
     }
     .stButton>button:hover {
         background: linear-gradient(135deg, #9333EA 0%, #DB2777 100%);
@@ -58,19 +59,35 @@ st.markdown("""
         transform: translateY(-2px);
     }
     
-    .metric-card {
+    /* PANEL SUPERIOR FIJO (STICKY) PARA PC */
+    .sticky-top-container {
+        position: sticky;
+        top: 0;
+        z-index: 999999;
+        background: rgba(253, 244, 255, 0.98);
+        backdrop-filter: blur(14px);
+        padding: 15px 15px 5px 15px;
+        border-bottom: 4px solid #DB2777;
+        box-shadow: 0 10px 30px rgba(219, 39, 119, 0.25);
+        margin-bottom: 25px;
+        border-radius: 0 0 24px 24px;
+    }
+
+    /* Tarjetas de métricas con números gigantes y bordes súper lindos */
+    .metric-card-big {
         background-color: #FFFFFF;
-        padding: 15px;
-        border-radius: 16px;
-        box-shadow: 0 4px 12px rgba(219, 39, 119, 0.1);
-        border: 2px solid #F472B6;
+        padding: 20px 10px;
+        border-radius: 22px;
+        box-shadow: 0 8px 22px rgba(219, 39, 119, 0.15);
+        border: 3px solid #EC4899;
         text-align: center;
+        margin-bottom: 8px;
     }
     
     .period-box {
         background: linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 100%);
-        padding: 20px;
-        border-radius: 18px;
+        padding: 18px;
+        border-radius: 20px;
         border: 3px dashed #EC4899;
         box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
         margin-bottom: 20px;
@@ -79,13 +96,26 @@ st.markdown("""
     .kiut-card {
         background-color: #FFFFFF;
         padding: 22px;
-        border-radius: 18px;
+        border-radius: 20px;
         border: 2px solid #FBCFE8;
         box-shadow: 0 6px 18px rgba(219, 39, 119, 0.08);
-        margin-bottom: 18px;
+        margin-bottom: 15px;
     }
 
-    /* Barra de progreso personalizada KiuT (Rosada/Morada) */
+    /* GRANDES CUADROS ROSADOS OSCUROS CON NÚMEROS BLANCOS GIGANTES */
+    .global-dark-box {
+        background: linear-gradient(135deg, #DB2777 0%, #9333EA 100%);
+        padding: 18px;
+        border-radius: 20px;
+        color: white;
+        box-shadow: 0 8px 22px rgba(147, 51, 234, 0.35);
+        text-align: center;
+        border: 3px solid #F472B6;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* Barra de progreso personalizada KiuT */
     .progress-container {
         width: 100%;
         background-color: #FCE7F3;
@@ -100,18 +130,6 @@ st.markdown("""
         background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
         border-radius: 12px;
         transition: width 0.4s ease;
-    }
-
-    /* Panel Superior Fijo (Sticky) para que siempre esté arriba */
-    .sticky-summary {
-        position: sticky;
-        top: 0;
-        z-index: 999;
-        background: rgba(253, 244, 255, 0.95);
-        backdrop-filter: blur(10px);
-        padding: 15px 10px;
-        border-bottom: 2px solid #FBCFE8;
-        margin-bottom: 20px;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -176,16 +194,11 @@ st.markdown('</div>', unsafe_allow_html=True)
 
 periodo_filtro = "Mitad de Mes" if "Mitad" in quincena_tipo else "Fin de Mes"
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
-nombre_periodo_corto = f"{mes_seleccionado[:3]}-15" if periodo_filtro == "Mitad de Mes" else f"{mes_seleccionado[:3]}-Fin"
 
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
     st.session_state.pagos_por_periodo[clave_periodo_actual] = {}
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
     st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
-
-st.markdown(f"💖 **Periodo Activo:** <span style='font-size:1.15rem; color:#9333EA; font-weight:bold;'>{clave_periodo_actual}</span> | 💰 **Nómina Estimada:** <span style='font-size:1.15rem; color:#10B981; font-weight:bold;'>{'Día 15' if periodo_filtro == 'Mitad de Mes' else 'Día 20'}</span>", unsafe_allow_html=True)
-
-st.markdown("---")
 
 # --- 3. SIDEBAR: Configuración y Excel ---
 st.sidebar.header("🌸 Configuración Base")
@@ -216,13 +229,15 @@ with st.sidebar.form(key="form_imprevisto_side"):
         st.rerun()
 
 
-# --- 4. PANEL SUPERIOR FIJO (STICKY) DE RENDIMIENTO ---
-st.markdown('<div class="sticky-summary">', unsafe_allow_html=True)
+# =========================================================================
+# --- 4. PANEL SUPERIOR FIJO ESTRICTO (STICKY TOP BAR) CON NÚMEROS GIGANTES ---
+# =========================================================================
+st.markdown('<div class="sticky-top-container">', unsafe_allow_html=True)
 st.markdown(f"### 💸 Rendimiento Financiero: {clave_periodo_actual}")
 
 col_config1, col_config2 = st.columns(2)
 with col_config1:
-    presupuesto_quincena_inicial = st.number_input("📥 Valor Inicial / Base Quincena (COP)", value=nomina_quincenal_neta, step=10000.0, key=f"base_{clave_periodo_actual}")
+    presupuesto_quincena_inicial = st.number_input("📥 Base Quincena (COP)", value=nomina_quincenal_neta, step=10000.0, key=f"base_{clave_periodo_actual}")
 with col_config2:
     ingresos_extra = st.number_input("➕ Ingresos Extras (COP)", value=0.0, step=10000.0, key=f"extra_{clave_periodo_actual}")
 
@@ -231,32 +246,54 @@ total_pagado_obligaciones_actual = sum(item["valor"] for item in st.session_stat
 total_imprevistos = sum(imp["valor"] for imp in st.session_state.imprevistos_por_periodo[clave_periodo_actual])
 quincena_que_queda = (presupuesto_quincena_inicial + ingresos_extra) - total_pagado_obligaciones_actual - total_imprevistos
 
+# 4 Tarjetas principales con NÚMEROS GIGANTES Y BORDES LINDOS
 col_q1, col_q2, col_q3, col_q4 = st.columns(4)
 with col_q1:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#9333EA; font-size:0.95rem;">📥 Ingresos</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#9333EA; font-size:1rem; font-weight:700;">📥 Ingresos</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(presupuesto_quincena_inicial + ingresos_extra)}</h1></div>', unsafe_allow_html=True)
 with col_q2:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#DB2777; font-size:0.95rem;">📤 Pagado</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(total_pagado_obligaciones_actual)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#DB2777; font-size:1rem; font-weight:700;">📤 Pagado</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(total_pagado_obligaciones_actual)}</h1></div>', unsafe_allow_html=True)
 with col_q3:
-    st.markdown(f'<div class="metric-card"><h4 style="color:#D97706; font-size:0.95rem;">🚨 Imprevistos</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(total_imprevistos)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big"><h4 style="color:#D97706; font-size:1rem; font-weight:700;">🚨 Imprevistos</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(total_imprevistos)}</h1></div>', unsafe_allow_html=True)
 with col_q4:
     color_queda = "#10B981" if quincena_que_queda >= 0 else "#EF4444"
-    st.markdown(f'<div class="metric-card" style="border: 2px solid {color_queda};"><h4 style="color:{color_queda}; font-size:0.95rem;">✨ QUEDA</h4><h3 style="color:#333; font-size:1.25rem;">{formato_COP(quincena_que_queda)}</h3></div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="metric-card-big" style="border: 3px solid {color_queda};"><h4 style="color:{color_queda}; font-size:1rem; font-weight:700;">✨ QUEDA</h4><h1 style="color:#1E293B; font-size:1.85rem; font-weight:800; margin:8px 0;">{formato_COP(quincena_que_queda)}</h1></div>', unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
 total_deuda_periodo = sum(item["valor"] for item in st.session_state.obligaciones_base if item["periodo"] == periodo_filtro)
 porcentaje_periodo = int((total_pagado_obligaciones_actual / total_deuda_periodo) * 100) if total_deuda_periodo > 0 else 0
 
-st.markdown(f"#### 🌸 Progreso General del Periodo: **{porcentaje_periodo}% Pagado** ({formato_COP(total_pagado_obligaciones_actual)} de {formato_COP(total_deuda_periodo)})")
+st.markdown(f"🌸 **Progreso Periodo ({periodo_filtro}): {porcentaje_periodo}%** ({formato_COP(total_pagado_obligaciones_actual)} de {formato_COP(total_deuda_periodo)})")
 st.markdown(f'''
     <div class="progress-container">
         <div class="progress-bar-kiut" style="width: {porcentaje_periodo}%;"></div>
     </div>
 ''', unsafe_allow_html=True)
-st.markdown('</div>', unsafe_allow_html=True)
+
+# DOS GRANDES CUADROS ROSADOS OSCUROS PARA TOTALES GLOBALES Y PORCENTAJE DE AVANCE
+total_deuda_global = sum(item["valor"] * item["total"] if "total" in item else item["valor"] for item in st.session_state.obligaciones_base)
+total_pagado_global = sum(item["valor"] * item["pagadas"] if "total" in item else (item["valor"] if item.get("pagadas", False) else 0) for item in st.session_state.obligaciones_base)
+porcentaje_global = int((total_pagado_global / total_deuda_global) * 100) if total_deuda_global > 0 else 0
+
+col_g1, col_g2 = st.columns(2)
+with col_g1:
+    st.markdown(f"""
+    <div class="global-dark-box">
+        <div style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">👑 Total Global de Deudas</div>
+        <div style="font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: #FFFFFF;">{formato_COP(total_deuda_global)}</div>
+    </div>
+    """, unsafe_allow_html=True)
+with col_g2:
+    st.markdown(f"""
+    <div class="global-dark-box">
+        <div style="font-size: 0.95rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">🚀 Porcentaje de Avance Total</div>
+        <div style="font-size: 1.8rem; font-weight: 800; margin-top: 4px; color: #FDE047;">{porcentaje_global}% <span style="font-size: 1rem; color: #FFF;">({formato_COP(total_pagado_global)})</span></div>
+    </div>
+    """, unsafe_allow_html=True)
+
+st.markdown('</div>', unsafe_allow_html=True) # Cierra sticky-top-container
 
 st.markdown("---")
 
-# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT IDÉNTICAS ---
+# --- 5. CONTROL DE PAGOS CON TARJETAS KIUT ---
 st.markdown(f"### 🎯 Obligaciones a Pagar en: **{clave_periodo_actual}**")
 
 for item in st.session_state.obligaciones_base:
@@ -270,25 +307,25 @@ for item in st.session_state.obligaciones_base:
     c1, c2, c3 = st.columns([3, 2, 1])
     
     with c1:
-        st.markdown(f"<span style='font-size: 1.25rem; font-weight: 700; color: #1E293B;'>{item['nombre']}</span>", unsafe_allow_html=True)
-        st.markdown(f"<span style='color:#9333EA; font-size:1.05rem; font-weight:bold;'>[{item['tipo']}] • Cuota: {formato_COP(item['valor'])}</span>", unsafe_allow_html=True)
-        st.markdown(f"<span style='color:#64748B; font-size:0.95rem;'>📅 Fecha estimada de pago: <b>{item.get('fecha_pago', 'N/A')}</b></span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='font-size: 1.15rem; font-weight: 700; color: #1E293B;'>{item['nombre']}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#9333EA; font-size:1rem; font-weight:bold;'>[{item['tipo']}] • Cuota: {formato_COP(item['valor'])}</span>", unsafe_allow_html=True)
+        st.markdown(f"<span style='color:#64748B; font-size:0.9rem;'>📅 Vence: <b>{item.get('fecha_pago', 'N/A')}</b></span>", unsafe_allow_html=True)
         
     with c2:
         if "total" in item:
             pct = int((item["pagadas"] / item["total"]) * 100) if item["total"] > 0 else 100
             pend = item["valor"] * max(0, (item["total"] - item["pagadas"]))
-            st.markdown(f"<span style='font-size: 1.05rem;'>Progreso: <b>{item['pagadas']} de {item['total']} ({pct}%)</b></span>", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size: 1rem;'>Progreso: <b>{item['pagadas']} de {item['total']} ({pct}%)</b></span>", unsafe_allow_html=True)
             st.markdown(f'''
                 <div class="progress-container">
                     <div class="progress-bar-kiut" style="width: {pct}%;"></div>
                 </div>
             ''', unsafe_allow_html=True)
-            st.markdown(f"<span style='color:#E11D48; font-size:0.95rem;'>Faltante total: <b>{formato_COP(pend)}</b></span>", unsafe_allow_html=True)
+            st.markdown(f"<span style='color:#E11D48; font-size:0.9rem;'>Faltante total: <b>{formato_COP(pend)}</b></span>", unsafe_allow_html=True)
         else:
             estado_txt = "🌸 <b>Pagado (100%)</b>" if esta_pagado else "⏳ <b>Pendiente (0%)</b>"
             pct_fijo = 100 if esta_pagado else 0
-            st.markdown(f"<span style='font-size: 1.05rem;'>Estado: {estado_txt}</span>", unsafe_allow_html=True)
+            st.markdown(f"<span style='font-size: 1rem;'>Estado: {estado_txt}</span>", unsafe_allow_html=True)
             st.markdown(f'''
                 <div class="progress-container">
                     <div class="progress-bar-kiut" style="width: {pct_fijo}%;"></div>
@@ -314,12 +351,12 @@ for item in st.session_state.obligaciones_base:
 
 st.markdown("---")
 
-# --- 6. GESTIÓN DE NUEVAS DEUDAS (PLANTILLA IDÉNTICA) Y PRÉSTAMOS ---
+# --- 6. GESTIÓN DE NUEVAS DEUDAS Y PRÉSTAMOS ---
 st.markdown("### 📋 Gestión de Nuevas Deudas y Cuentas por Cobrar")
 tab_deudas, tab_prestamos = st.tabs(["💸 Registrar / Ver Nuevas Deudas", "🤝 Dinero que Te Deben"])
 
 with tab_deudas:
-    st.markdown("#### Agrega un nuevo crédito o cuota que te haya salido (¡Se creará exactamente igual de hermosa que las demás!):")
+    st.markdown("#### Agrega un nuevo crédito o cuota (¡Se creará exactamente igual de hermosa que las demás!):")
     with st.form(key="form_nueva_deuda_main"):
         col_nd1, col_nd2 = st.columns(2)
         with col_nd1:
@@ -329,7 +366,7 @@ with tab_deudas:
             n_total_cuotas = st.number_input("Número Total de Cuotas", min_value=1, value=1, step=1)
             n_periodo = st.selectbox("¿A qué quincena pertenece?", ["Mitad de Mes", "Fin de Mes"])
         
-        n_fecha_pago = st.text_input("Fecha estimada de pago (Ej: 28 de cada mes)")
+        n_fecha_pago = st.text_input("Fecha estimada de pago (Ej: Semanal todos los martes)")
         btn_guardar_deuda = st.form_submit_button("💖 Guardar Nueva Deuda en el Sistema")
         
         if btn_guardar_deuda and n_nombre and n_valor_cuota > 0:
@@ -344,7 +381,7 @@ with tab_deudas:
                 "periodo": n_periodo,
                 "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir"
             })
-            st.success(f"¡Deuda '{n_nombre}' guardada con éxito! Ya aparece en tu lista con el mismo diseño KiuT.")
+            st.success(f"¡Deuda '{n_nombre}' guardada con éxito!")
             st.rerun()
 
 with tab_prestamos:
