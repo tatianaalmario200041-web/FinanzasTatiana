@@ -262,7 +262,7 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE DONA EN LA BARRA LATERAL (CON VALOR MÍNIMO TÉCNICO PARA QUE NUNCA DESAPAREZCA)
+# GRÁFICO DE DONA EN LA BARRA LATERAL
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 0px;'>💖 Distribución</h4>", unsafe_allow_html=True)
 
@@ -315,8 +315,25 @@ for i in range(0, len(items_filtrados), cols_por_fila):
             item_id = item["id"]
             esta_pagado = pagos_actuales.get(item_id, False)
             
+            # Cálculo del porcentaje para la barra
+            if "total" in item and item["total"] > 0:
+                porcentaje = int(round((item["pagadas"] / item["total"]) * 100))
+            else:
+                porcentaje = 100 if esta_pagado else 0
+            
             with cols[j]:
                 st.markdown('<div class="kiut-card-grid">', unsafe_allow_html=True)
+                
+                # BARRA DE PROGRESO PERSONALIZADA (Morado Kiut con número blanco)
+                st.markdown(f"""
+                    <div style="background-color: #E1BEE7; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1px solid #BA68C8;">
+                        <div style="background: linear-gradient(135deg, #7B1FA2 0%, #8E24AA 100%); width: {porcentaje}%; height: 100%; border-radius: 6px 0 0 6px; transition: width 0.4s ease;"></div>
+                        <div style="position: absolute; width: 100%; top: 0; left: 0; text-align: center; font-size: 11px; font-weight: 800; color: #FFFFFF; line-height: 22px; text-shadow: 0px 1px 2px rgba(0,0,0,0.3);">
+                            {porcentaje}% Avance
+                        </div>
+                    </div>
+                """, unsafe_allow_html=True)
+                
                 info_sec = f"Q {item['pagadas']}/{item['total']}" if "total" in item else f"{item.get('fecha_pago', '-')}"
                 estado_txt = "✅ Pagado" if esta_pagado else "⏳ Pendiente"
                 color_est = "#6A1B9A" if esta_pagado else "#C2185B"
