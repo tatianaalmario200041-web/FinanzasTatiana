@@ -262,14 +262,14 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE DONA EN LA BARRA LATERAL
+# GRÁFICO DE DONA EN LA BARRA LATERAL (CON VALOR MÍNIMO TÉCNICO PARA QUE NUNCA DESAPAREZCA)
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 0px;'>💖 Distribución</h4>", unsafe_allow_html=True)
 
-total_pagado_val = total_pagado_obligaciones_actual
-total_pend_val = sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))
-total_hormiga_val = total_imprevistos
-saldo_disponible_val = max(0, quincena_que_queda)
+total_pagado_val = max(1.0, total_pagado_obligaciones_actual) if total_pagado_obligaciones_actual > 0 else 0.001
+total_pend_val = max(1.0, sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))) if sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False)) > 0 else 0.001
+total_hormiga_val = max(1.0, total_imprevistos) if total_imprevistos > 0 else 0.001
+saldo_disponible_val = max(1.0, quincena_que_queda) if quincena_que_queda > 0 else 0.001
 
 df_grafico = pd.DataFrame({
     'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
@@ -287,7 +287,10 @@ base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=45, outerRadius=80, padA
         ), 
         legend=alt.Legend(title=None, orient="bottom", labelFont="Montserrat", labelFontSize=10, labelColor="#3E2723")
     ),
-    tooltip=[alt.Tooltip('Categoría', title="Concepto"), alt.Tooltip('Valor', title="Monto (COP)", format="$,.0f")]
+    tooltip=[
+        alt.Tooltip('Categoría', title="Concepto"),
+        alt.Tooltip('Valor', title="Monto Real (COP)", format="$,.0f")
+    ]
 ).properties(
     width=240,
     height=210
