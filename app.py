@@ -3,7 +3,7 @@ import pandas as pd
 import altair as alt
 
 st.set_page_config(
-    page_title="Finanzas Tatis",
+    page_title="Finanzas Tatis Pro",
     page_icon="🌸",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -262,18 +262,25 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE DONA EN LA BARRA LATERAL
+# GRÁFICO DE ANILLO (CON VALOR MÍNIMO PARA QUE NUNCA SE ROMPA)
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 0px;'>💖 Distribución</h4>", unsafe_allow_html=True)
 
-total_pagado_val = max(1.0, total_pagado_obligaciones_actual) if total_pagado_obligaciones_actual > 0 else 0.001
-total_pend_val = max(1.0, sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False))) if sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False)) > 0 else 0.001
-total_hormiga_val = max(1.0, total_imprevistos) if total_imprevistos > 0 else 0.001
-saldo_disponible_val = max(1.0, quincena_que_queda) if quincena_que_queda > 0 else 0.001
+val_pagado = float(total_pagado_obligaciones_actual)
+val_pendiente = float(sum(item["valor"] for item in obligaciones_activas if item["periodo"] == periodo_filtro and not pagos_actuales.get(item["id"], False)))
+val_imprevistos = float(total_imprevistos)
+val_disponible = float(max(0.0, quincena_que_queda))
+
+# Ponemos un epsilon (1.0) si todo está en 0 para que la dona no desaparezca ni se deforme
+if val_pagado == 0 and val_pendiente == 0 and val_imprevistos == 0 and val_disponible == 0:
+    val_disponible = 1.0
 
 df_grafico = pd.DataFrame({
     'Categoría': ['Pagado', 'Pendiente', 'Imprevistos', 'Disponible'],
-    'Valor': [total_pagado_val, total_pend_val, total_hormiga_val, saldo_disponible_val]
+    'Valor': [val_pagado if val_pagado > 0 else 0.001, 
+              val_pendiente if val_pendiente > 0 else 0.001, 
+              val_imprevistos if val_imprevistos > 0 else 0.001, 
+              val_disponible if val_disponible > 0 else 0.001]
 })
 
 base_chart = alt.Chart(df_grafico).mark_arc(innerRadius=45, outerRadius=80, padAngle=3, cornerRadius=6).encode(
@@ -315,7 +322,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
             item_id = item["id"]
             esta_pagado = pagos_actuales.get(item_id, False)
             
-            # Cálculo del porcentaje para la barra
+            # Cálculo exacto del porcentaje de avance
             if "total" in item and item["total"] > 0:
                 porcentaje = int(round((item["pagadas"] / item["total"]) * 100))
             else:
@@ -324,11 +331,11 @@ for i in range(0, len(items_filtrados), cols_por_fila):
             with cols[j]:
                 st.markdown('<div class="kiut-card-grid">', unsafe_allow_html=True)
                 
-                # BARRA DE PROGRESO PERSONALIZADA (Morado Kiut con número blanco)
+                # BARRA DE PROGRESO IDÉNTICA A TU IDEA (Fondo moradito kiut, texto blanco)
                 st.markdown(f"""
-                    <div style="background-color: #E1BEE7; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1px solid #BA68C8;">
+                    <div style="background-color: #E1BEE7; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1.5px solid #BA68C8;">
                         <div style="background: linear-gradient(135deg, #7B1FA2 0%, #8E24AA 100%); width: {porcentaje}%; height: 100%; border-radius: 6px 0 0 6px; transition: width 0.4s ease;"></div>
-                        <div style="position: absolute; width: 100%; top: 0; left: 0; text-align: center; font-size: 11px; font-weight: 800; color: #FFFFFF; line-height: 22px; text-shadow: 0px 1px 2px rgba(0,0,0,0.3);">
+                        <div style="position: absolute; width: 100%; top: 0; left: 0; text-align: center; font-size: 11px; font-weight: 800; color: #FFFFFF; line-height: 20px; text-shadow: 0px 1px 2px rgba(0,0,0,0.4);">
                             {porcentaje}% Avance
                         </div>
                     </div>
