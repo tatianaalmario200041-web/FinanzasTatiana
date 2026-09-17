@@ -147,13 +147,16 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "gas_m", "nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "tc_m", "nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
-        # Sistecredito actualizados con tus montos exactos y marcados como pagados hoy
+        # Sistecredito actualizados y marcados como pagados hoy
         {"id": "sist_vest", "nombre": "Sistecredito Vestido", "valor": 39413.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "sist_sud", "nombre": "Sistecredito Sudadera", "valor": 59599.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "sist_mal", "nombre": "Sistecredito Maleta (Totto)", "valor": 66051.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         
-        # Préstamo Nicolás (Cuota semanal de 216.000)
+        # Préstamo Nicolás septiembre (Cuota semanal de 216.000)
         {"id": "nicolas_q1", "nombre": "Préstamo Nicolás (Cuota 1)", "valor": 216000.0, "tipo": "Préstamo 20%", "total": 5, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "22 de Sept"},
+
+        # Deuda pendiente Nicolás en Octubre (Mitad de mes)
+        {"id": "nicolas_oct_m", "nombre": "Deuda Nicolás Octubre (Q1)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Octubre Q1"},
 
         {"id": "internet_m", "nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "parq_m", "nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
@@ -163,6 +166,10 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "tecno_moto", "nombre": "Tecnomecánica Moto", "valor": 223700.0, "tipo": "Crédito Moto", "total": 6, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "28 de Sept"},
         {"id": "gas_f", "nombre": "Gas (Fin)", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "tc_f", "nombre": "Tarjeta de Crédito (Fin)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
+        
+        # Deuda pendiente Nicolás en Octubre (Fin de mes)
+        {"id": "nicolas_oct_f", "nombre": "Deuda Nicolás Octubre (Q2)", "valor": 180000.0, "tipo": "Deuda Única", "total": 1, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Octubre Q2"},
+
         {"id": "internet_f", "nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "parq_f", "nombre": "Parqueadero Q2", "valor": 60000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "libres_f", "nombre": "Gastos Libres Q2", "valor": 100000.0, "tipo": "Libre", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
@@ -185,7 +192,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# CONFIGURACIÓN SUPERIOR COMPACTA (CON TU SALDO REAL DISPONIBLE)
+# CONFIGURACIÓN SUPERIOR COMPACTA
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2, col_cfg3, col_cfg4 = st.columns(4)
 with col_cfg1:
