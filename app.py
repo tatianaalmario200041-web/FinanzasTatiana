@@ -146,15 +146,21 @@ if 'obligaciones_base' not in st.session_state:
         {"id": "camilo_m", "nombre": "Deuda Camilo", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "gas_m", "nombre": "Gas", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "tc_m", "nombre": "Tarjeta de Crédito (TC)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
-        {"id": "sist_vest", "nombre": "Sistecredito Vestido", "valor": 39000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
-        {"id": "sist_sud", "nombre": "Sistecredito Sudadera", "valor": 59000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
-        {"id": "sist_mal", "nombre": "Sistecredito Maleta", "valor": 66000.0, "tipo": "Crédito", "total": 4, "pagadas": 2, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
+        
+        # Sistecredito actualizados con tus montos exactos y marcados como pagados hoy
+        {"id": "sist_vest", "nombre": "Sistecredito Vestido", "valor": 39413.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
+        {"id": "sist_sud", "nombre": "Sistecredito Sudadera", "valor": 59599.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
+        {"id": "sist_mal", "nombre": "Sistecredito Maleta (Totto)", "valor": 66051.0, "tipo": "Crédito", "total": 4, "pagadas": 3, "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
+        
+        # Préstamo Nicolás (Cuota semanal de 216.000)
+        {"id": "nicolas_q1", "nombre": "Préstamo Nicolás (Cuota 1)", "valor": 216000.0, "tipo": "Préstamo 20%", "total": 5, "pagadas": 0, "periodo": "Mitad de Mes", "fecha_pago": "22 de Sept"},
+
         {"id": "internet_m", "nombre": "Internet Q1", "valor": 55000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "parq_m", "nombre": "Parqueadero Q1", "valor": 25000.0, "tipo": "Fijo", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
         {"id": "libres_m", "nombre": "Gastos Libres Q1", "valor": 100000.0, "tipo": "Libre", "periodo": "Mitad de Mes", "fecha_pago": "Día 15"},
 
         {"id": "camilo_f", "nombre": "Deuda Camilo (Fin)", "valor": 373500.0, "tipo": "Crédito", "total": 6, "pagadas": 2, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
-        {"id": "tecno_moto", "nombre": "Tecnomecánica Moto", "valor": 223700.0, "tipo": "Crédito Moto", "total": 6, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "28 de Marzo"},
+        {"id": "tecno_moto", "nombre": "Tecnomecánica Moto", "valor": 223700.0, "tipo": "Crédito Moto", "total": 6, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "28 de Sept"},
         {"id": "gas_f", "nombre": "Gas (Fin)", "valor": 390000.0, "tipo": "Servicio Cuotas", "total": 12, "pagadas": 7, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "tc_f", "nombre": "Tarjeta de Crédito (Fin)", "valor": 160000.0, "tipo": "Crédito TC", "total": 8, "pagadas": 0, "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
         {"id": "internet_f", "nombre": "Internet Q2", "valor": 77000.0, "tipo": "Fijo", "periodo": "Fin de Mes", "fecha_pago": "Día 20"},
@@ -168,7 +174,9 @@ if 'pagos_por_periodo' not in st.session_state:
 if 'imprevistos_por_periodo' not in st.session_state:
     st.session_state.imprevistos_por_periodo = {}
 if 'prestamos_por_cobrar' not in st.session_state:
-    st.session_state.prestamos_por_cobrar = []
+    st.session_state.prestamos_por_cobrar = [
+        {"deudor": "Tania", "valor": 20000.0, "fecha_pago": "Pendiente"}
+    ]
 
 # TÍTULO PRINCIPAL
 st.markdown("""
@@ -177,11 +185,11 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# CONFIGURACIÓN SUPERIOR COMPACTA
+# CONFIGURACIÓN SUPERIOR COMPACTA (CON TU SALDO REAL DISPONIBLE)
 st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2, col_cfg3, col_cfg4 = st.columns(4)
 with col_cfg1:
-    saldo_actual_banco = st.number_input("Banco (COP)", value=2800000.0, step=100000.0)
+    saldo_actual_banco = st.number_input("Banco + Nequi (COP)", value=540427.0, step=10000.0)
 with col_cfg2:
     nomina_quincenal_neta = st.number_input("Nómina Neta", value=1294007.0, step=10000.0)
 with col_cfg3:
@@ -194,20 +202,23 @@ periodo_filtro = "Mitad de Mes" if "Mitad" in quincena_tipo else "Fin de Mes"
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
 
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
-    st.session_state.pagos_por_periodo[clave_periodo_actual] = {}
+    st.session_state.pagos_por_periodo[clave_periodo_actual] = {
+        "sist_vest": True,
+        "sist_sud": True,
+        "sist_mal": True
+    }
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
-    st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
+    st.session_state.imprevistos_por_periodo[clave_periodo_actual] = [
+        {"nombre": "Tanqueo Moto Semanal", "valor": 40000.0}
+    ]
 
 obligaciones_activas = []
 dinero_liberado_total = 0.0
 
 for item in st.session_state.obligaciones_base:
-    # Si tiene cuotas y todas están pagadas, se considera liberado proporcionalmente
     if "total" in item and item["total"] > 0:
         if item["pagadas"] >= item["total"]:
             dinero_liberado_total += item["valor"]
-    
-    # Mantenemos las obligaciones visibles en sus periodos correspondientes
     obligaciones_activas.append(item)
 
 presupuesto_quincena_inicial = nomina_quincenal_neta
@@ -244,7 +255,7 @@ st.sidebar.markdown(f'''
 
 st.sidebar.markdown(f'''
     <div class="metric-card-sidebar">
-        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos / Hormiga</h6>
+        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos / Gas / Moto</h6>
         <div class="metric-value-gigante">{formato_COP(total_imprevistos)}</div>
     </div>
 ''', unsafe_allow_html=True)
@@ -401,7 +412,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
 st.markdown("<hr style='border: 1px solid #CE93D8; margin: 15px 0;'>", unsafe_allow_html=True)
 
 # PESTAÑAS INFERIORES PRO
-tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportار"])
+tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportar"])
 
 with tab_deudas:
     with st.form(key="form_nueva_deuda_main"):
@@ -411,7 +422,6 @@ with tab_deudas:
             n_valor_cuota = st.number_input("Valor Cuota / Deuda Total", min_value=0.0, step=10000.0)
         with c_nd2:
             n_total_cuotas = st.number_input("Total Cuotas (1 si es pago único)", min_value=1, value=1, step=1)
-            # AÑADIDA OPCIÓN PARA DEUDAS LIBRES O SIN PLAZO FIJO DE QUINCENA
             n_periodo = st.selectbox("Asignar a Quincena / Tipo", ["Mitad de Mes", "Fin de Mes", "Deuda Libre / Sin Quincena Fija"])
         with c_nd3:
             n_fecha_pago = st.text_input("Fecha / Frecuencia (Ej. Libre, Día 15)")
