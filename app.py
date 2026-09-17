@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
+import json
 
 st.set_page_config(
     page_title="Finanzas Tatis Pro",
@@ -184,7 +185,7 @@ with col_cfg1:
 with col_cfg2:
     nomina_quincenal_neta = st.number_input("Nómina Neta", value=1294007.0, step=10000.0)
 with col_cfg3:
-    mes_seleccionado = st.selectbox("Mes", ["Marzo 2026", "Abril 2026", "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026", "Septiembre 2026"], key="select_mes_main")
+    mes_seleccionado = st.selectbox("Mes", ["Marzo 2026", "Abril 2026", "Mayo 2026", "Junio 2026", "Julio 2026", "Agosto 2026", "Septiembre 2026", "Octubre 2026", "Noviembre 2026", "Diciembre 2026"], key="select_mes_main")
 with col_cfg4:
     quincena_tipo = st.selectbox("Quincena", ["Mitad de Mes (Día 15)", "Fin de Mes (Día 20)"], key="select_quincena_main")
 st.markdown('</div>', unsafe_allow_html=True)
@@ -262,7 +263,31 @@ st.sidebar.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# GRÁFICO DE BARRAS PORCENTUALES (SEGURO Y COMPATIBLE)
+# GESTIÓN DE RESPALDO (EXPORTAR / IMPORTAR) EN SIDEBAR
+with st.sidebar.expander("💾 Guardar / Cargar Respaldo"):
+    data_backup = {
+        "obligaciones_base": st.session_state.obligaciones_base,
+        "pagos_por_periodo": st.session_state.pagos_por_periodo,
+        "imprevistos_por_periodo": st.session_state.imprevistos_por_periodo,
+        "prestamos_por_cobrar": st.session_state.prestamos_por_cobrar
+    }
+    json_str = json.dumps(data_backup, ensure_ascii=False, indent=4)
+    st.download_button("📥 Descargar Archivo Respaldo", data=json_str, file_name="respaldo_finanzas_tatis.json", mime="application/json")
+    
+    uploaded_file = st.file_uploader("📤 Cargar Archivo Respaldo", type=["json"])
+    if uploaded_file is not None:
+        try:
+            loaded_data = json.load(uploaded_file)
+            st.session_state.obligaciones_base = loaded_data.get("obligaciones_base", st.session_state.obligaciones_base)
+            st.session_state.pagos_por_periodo = loaded_data.get("pagos_por_periodo", {})
+            st.session_state.imprevistos_por_periodo = loaded_data.get("imprevistos_por_periodo", {})
+            st.session_state.prestamos_por_cobrar = loaded_data.get("prestamos_por_cobrar", [])
+            st.success("¡Respaldo cargado con éxito!")
+            st.rerun()
+        except Exception as e:
+            st.error("Error al cargar el archivo.")
+
+# GRÁFICO DE BARRAS PORCENTUALES
 st.sidebar.markdown("<hr style='border: 1px solid #BA68C8; margin: 10px 0;'>", unsafe_allow_html=True)
 st.sidebar.markdown("<h4 style='color: #4A148C; font-weight: 800; text-align: center; margin-bottom: 2px;'>💖 Distribución de Fondos</h4>", unsafe_allow_html=True)
 
@@ -314,7 +339,7 @@ st.sidebar.altair_chart(bar_chart, use_container_width=True)
 
 
 # -------------------------------------------------------------
-# PANEL CENTRAL: CONTROL DE PAGOS EN MULTICOLUMNA (GRID 3 COLUMNAS)
+# PANEL CENTRAL: CONTROL DE PAGOS EN MULTICOLUMNA
 # -------------------------------------------------------------
 st.markdown("<h4 style='color: #4A148C; font-weight: 800; margin-top: 5px;'>⚡ Control de Pagos de la Quincena</h4>", unsafe_allow_html=True)
 
@@ -372,8 +397,8 @@ for i in range(0, len(items_filtrados), cols_por_fila):
 
 st.markdown("<hr style='border: 1px solid #CE93D8; margin: 15px 0;'>", unsafe_allow_html=True)
 
-# PESTAÑAS INFERIORES PRO
-tab_deudas, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportar"])
+# PESTAÑAS INFERIORES PRO (AÑADIDA PESTAÑA DE MODIFICAR CUOTAS)
+tab_deudas, tab_editar, tab_prestamos, tab_extras = st.tabs(["➕ Nueva Deuda", "✏️ Modificar Cuotas", "🤝 Cuentas por Cobrar", "📊 Imprevistos & Exportar"])
 
 with tab_deudas:
     with st.form(key="form_nueva_deuda_main"):
@@ -397,6 +422,20 @@ with tab_deudas:
                 "periodo": n_periodo, "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir"
             })
             st.success("¡Deuda guardada correctamente!")
+            st.rerun()
+
+with tab_editar:
+    st.markdown("<p style='font-weight: 700; color: #4A148C;'>Si alguna cuota subió o bajó de precio este mes, selecciónala aquí y actualiza su valor:</p>", unsafe_allow_html=True)
+    with st.form(key="form_editar_cuota_val"):
+        nombres_obligaciones = {item["nombre"] + f" ({item['periodo']})": item for item in st.session_state.obligaciones_base}
+        sel_nombre_edit = st.selectbox("Selecciona la obligación a modificar", list(nombres_obligaciones.keys()))
+        item_a_editar = nombres_obligaciones[sel_nombre_edit]
+        
+        nuevo_valor_edit = st.number_input("Nuevo Valor (COP)", value=float(item_a_editar["valor"]), step=1000.0)
+        
+        if st.form_submit_button("Actualizar Valor de Cuota 💜"):
+            item_a_editar["valor"] = nuevo_valor_edit
+            st.success(f"¡Se actualizó el valor de {item_a_editar['nombre']} a {formato_COP(nuevo_valor_edit)}!")
             st.rerun()
 
 with tab_prestamos:
