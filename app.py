@@ -148,6 +148,7 @@ def formato_COP(valor):
 
 if "obligaciones_base" not in st.session_state:
   st.session_state.obligaciones_base = [
+      # --- MITAD DE MES (DÍA 15) E INCLUYE LAS RESERVAS DE NICOLÁS QUE CAEN ANTES DE FIN DE MES ---
       {
           "id": "camilo_m",
           "nombre": "Deuda Camilo",
@@ -219,6 +220,22 @@ if "obligaciones_base" not in st.session_state:
           "fecha_pago": "Primera Quincena",
       },
       {
+          "id": "nic_sem_martes_22",
+          "nombre": "Reserva Cuota Nicolás (Martes 22)",
+          "valor": 216000.0,
+          "tipo": "Préstamo Semanal",
+          "periodo": "Mitad de Mes",
+          "fecha_pago": "Martes 22",
+      },
+      {
+          "id": "nic_sem_martes_29",
+          "nombre": "Reserva Cuota Nicolás (Martes 29)",
+          "valor": 216000.0,
+          "tipo": "Préstamo Semanal",
+          "periodo": "Mitad de Mes",
+          "fecha_pago": "Martes 29",
+      },
+      {
           "id": "internet_m",
           "nombre": "Internet Q1",
           "valor": 55000.0,
@@ -242,7 +259,7 @@ if "obligaciones_base" not in st.session_state:
           "periodo": "Mitad de Mes",
           "fecha_pago": "Día 15",
       },
-      # --- FIN DE MES (DÍA 20) E INCLUYE LAS RESERVAS DE NICOLÁS ---
+      # --- FIN DE MES (DÍA 20) ---
       {
           "id": "camilo_f",
           "nombre": "Deuda Camilo (Fin)",
@@ -292,22 +309,6 @@ if "obligaciones_base" not in st.session_state:
           "pagadas": 0,
           "periodo": "Fin de Mes",
           "fecha_pago": "Segunda Quincena",
-      },
-      {
-          "id": "nic_sem_martes_22",
-          "nombre": "Reserva Cuota Nicolás (Martes 22)",
-          "valor": 216000.0,
-          "tipo": "Préstamo Semanal",
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Martes 22",
-      },
-      {
-          "id": "nic_sem_martes_29",
-          "nombre": "Reserva Cuota Nicolás (Martes 29)",
-          "valor": 216000.0,
-          "tipo": "Préstamo Semanal",
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Martes 29",
       },
       {
           "id": "internet_f",
@@ -813,7 +814,7 @@ with tab_resumen:
         f"""
             <div class="kiut-card-grid">
                 <h5 style="color:#6A1B9A; margin-top:0;">🌸 Mitad de Mes (Día 15)</h5>
-                <p><b>Total Obligaciones:</b> {formato_COP(tot_mitad)}</p>
+                <p><b>Total Obligaciones & Reservas:</b> {formato_COP(tot_mitad)}</p>
                 <p><b>Pagado/Separado:</b> {formato_COP(pagado_mitad)}</p>
                 <p><b>Pendiente:</b> {formato_COP(tot_mitad - pagado_mitad)}</p>
             </div>
@@ -825,7 +826,7 @@ with tab_resumen:
         f"""
             <div class="kiut-card-grid">
                 <h5 style="color:#7B1FA2; margin-top:0;">🌸 Fin de Mes (Día 20)</h5>
-                <p><b>Total Obligaciones & Reservas:</b> {formato_COP(tot_fin)}</p>
+                <p><b>Total Obligaciones:</b> {formato_COP(tot_fin)}</p>
                 <p><b>Separado:</b> {formato_COP(pagado_fin)}</p>
                 <p><b>Pendiente:</b> {formato_COP(tot_fin - pagado_fin)}</p>
             </div>
