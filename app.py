@@ -178,7 +178,6 @@ if "obligaciones_base" not in st.session_state:
           "periodo": "Mitad de Mes",
           "fecha_pago": "Día 15",
       },
-      # Sistecredito
       {
           "id": "sist_vest",
           "nombre": "Sistecredito Vestido",
@@ -209,7 +208,6 @@ if "obligaciones_base" not in st.session_state:
           "periodo": "Mitad de Mes",
           "fecha_pago": "Día 15",
       },
-      # Gerardo
       {
           "id": "gerardo_m",
           "nombre": "Deuda Gerardo",
@@ -244,7 +242,7 @@ if "obligaciones_base" not in st.session_state:
           "periodo": "Mitad de Mes",
           "fecha_pago": "Día 15",
       },
-      # --- FIN DE MES (DÍA 20) E INCLUYE LAS RESERVAS DE MARTES DE NICOLÁS ---
+      # FIN DE MES
       {
           "id": "camilo_f",
           "nombre": "Deuda Camilo (Fin)",
@@ -407,20 +405,11 @@ periodo_filtro = (
 )
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
 
+# Inicializar memoria independiente por cada mes y periodo exacto
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
-  st.session_state.pagos_por_periodo[clave_periodo_actual] = {
-      "camilo_m": True,
-      "gas_m": True,
-      "tc_m": True,
-      "sist_vest": True,
-      "sist_sud": True,
-      "sist_mal": True,
-  }
+  st.session_state.pagos_por_periodo[clave_periodo_actual] = {}
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
-  st.session_state.imprevistos_por_periodo[clave_periodo_actual] = [{
-      "nombre": "Tanqueo Moto Semanal",
-      "valor": 40000.0,
-  }]
+  st.session_state.imprevistos_por_periodo[clave_periodo_actual] = []
 
 obligaciones_activas = []
 dinero_liberado_total = 0.0
@@ -434,7 +423,6 @@ for item in st.session_state.obligaciones_base:
 presupuesto_quincena_inicial = nomina_quincenal_neta
 pagos_actuales = st.session_state.pagos_por_periodo[clave_periodo_actual]
 
-# Calculamos obligaciones a pagar (excluyendo gas separado y considerando reservas semanales obligatorias)
 total_pagado_obligaciones_actual = sum(
     item["valor"]
     for item in obligaciones_activas
@@ -447,7 +435,6 @@ total_imprevistos = sum(
     for imp in st.session_state.imprevistos_por_periodo[clave_periodo_actual]
 )
 
-# LO QUE QUEDA REALMENTE LIBRE (separando de una vez las reservas de Nicolás del 22 y 29)
 quincena_que_queda = (
     presupuesto_quincena_inicial
     - total_pagado_obligaciones_actual
@@ -482,7 +469,7 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar">
-        <h6 style="color:#7B1FA2; margin:0; font-weight:700;">📤 Compromisos / Reservas</h6>
+        <h6 style="color:#7B1FA2; margin:0; font-weight:700;">📤 Pagado / Separado en {periodo_filtro}</h6>
         <div class="metric-value-gigante">{formato_COP(total_pagado_obligaciones_actual)}</div>
     </div>
 """,
@@ -492,7 +479,7 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar">
-        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos / Gas / Moto</h6>
+        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos del Mes</h6>
         <div class="metric-value-gigante">{formato_COP(total_imprevistos)}</div>
     </div>
 """,
@@ -503,7 +490,7 @@ color_queda = "#7B1FA2" if quincena_que_queda >= 0 else "#C2185B"
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar" style="border: 2px solid {color_queda}; background: #FCE4EC;">
-        <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ REALMENTE LIBRE ✨</h6>
+        <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ REALMENTE LIBRE ({mes_seleccionado}) ✨</h6>
         <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.3rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
 """,
@@ -654,8 +641,8 @@ st.sidebar.altair_chart(bar_chart, use_container_width=True)
 # PANEL CENTRAL: CONTROL DE PAGOS EN MULTICOLUMNA
 # -------------------------------------------------------------
 st.markdown(
-    "<h4 style='color: #4A148C; font-weight: 800; margin-top: 5px;'>⚡ Control"
-    " de Pagos de la Quincena</h4>",
+    f"<h4 style='color: #4A148C; font-weight: 800; margin-top: 5px;'>⚡ Control"
+    f" de Pagos para {clave_periodo_actual}</h4>",
     unsafe_allow_html=True,
 )
 
@@ -692,7 +679,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
         else:
           progreso_html = f"""
                     <div style="background-color: #FCE4EC; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1.5px solid #F48FB1; text-align: center; font-size: 11px; font-weight: 800; color: #AD1457; line-height: 20px;">
-                        Reserva Semanal Obligatoria 🗓️
+                        Reserva Semanal 🗓️
                     </div>
                     """
         st.markdown(progreso_html, unsafe_allow_html=True)
@@ -786,24 +773,24 @@ with tab_deudas:
 
 with tab_resumen:
   st.markdown(
-      "<h4 style='color: #4A148C; font-weight: 800;'>📊 Resumen General por"
-      " Periodos y Meses</h4>",
+      f"<h4 style='color: #4A148C; font-weight: 800;'>📊 Resumen General para"
+      f" {mes_seleccionado}</h4>",
       unsafe_allow_html=True,
   )
-  st.markdown(f"**Mes consultado:** {mes_seleccionado}")
 
   tot_mitad = sum(
       item["valor"]
       for item in st.session_state.obligaciones_base
       if item["periodo"] == "Mitad de Mes"
   )
+  clave_m = f"{mes_seleccionado} - Mitad de Mes"
   pagado_mitad = sum(
       item["valor"]
       for item in st.session_state.obligaciones_base
       if item["periodo"] == "Mitad de Mes"
-      and st.session_state.pagos_por_periodo.get(
-          f"{mes_seleccionado} - Mitad de Mes", {}
-      ).get(item["id"], False)
+      and st.session_state.pagos_por_periodo.get(clave_m, {}).get(
+          item["id"], False
+      )
   )
 
   tot_fin = sum(
@@ -811,13 +798,14 @@ with tab_resumen:
       for item in st.session_state.obligaciones_base
       if item["periodo"] == "Fin de Mes"
   )
+  clave_f = f"{mes_seleccionado} - Fin de Mes"
   pagado_fin = sum(
       item["valor"]
       for item in st.session_state.obligaciones_base
       if item["periodo"] == "Fin de Mes"
-      and st.session_state.pagos_por_periodo.get(
-          f"{mes_seleccionado} - Fin de Mes", {}
-      ).get(item["id"], False)
+      and st.session_state.pagos_por_periodo.get(clave_f, {}).get(
+          item["id"], False
+      )
   )
 
   col_res1, col_res2 = st.columns(2)
@@ -898,7 +886,7 @@ with tab_prestamos:
       st.rerun()
 
   if st.session_state.prestamos_por_cobrar:
-    st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_app_html=True)
     for idx_p, prestamo in enumerate(
         st.session_state.prestamos_por_cobrar
     ):
@@ -928,7 +916,7 @@ with tab_extras:
             "nombre": nombre_imp_m,
             "valor": valor_imp_m,
         })
-        st.success("¡Registrado!")
+        st.success("¡Registrado en este mes!")
         st.rerun()
   with col_ex2:
     st.markdown("<br>", unsafe_allow_html=True)
