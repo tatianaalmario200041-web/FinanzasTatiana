@@ -242,7 +242,7 @@ if "obligaciones_base" not in st.session_state:
           "periodo": "Mitad de Mes",
           "fecha_pago": "Día 15",
       },
-      # FIN DE MES
+      # --- FIN DE MES (DÍA 20) E INCLUYE LAS RESERVAS DE NICOLÁS ---
       {
           "id": "camilo_f",
           "nombre": "Deuda Camilo (Fin)",
