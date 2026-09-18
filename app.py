@@ -405,7 +405,6 @@ periodo_filtro = (
 )
 clave_periodo_actual = f"{mes_seleccionado} - {periodo_filtro}"
 
-# Inicializar memoria independiente por cada mes y periodo exacto
 if clave_periodo_actual not in st.session_state.pagos_por_periodo:
   st.session_state.pagos_por_periodo[clave_periodo_actual] = {}
 if clave_periodo_actual not in st.session_state.imprevistos_por_periodo:
@@ -886,7 +885,7 @@ with tab_prestamos:
       st.rerun()
 
   if st.session_state.prestamos_por_cobrar:
-    st.markdown("<br>", unsafe_app_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
     for idx_p, prestamo in enumerate(
         st.session_state.prestamos_por_cobrar
     ):
