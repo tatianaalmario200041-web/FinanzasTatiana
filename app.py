@@ -15,7 +15,7 @@ st.markdown(
     
     html, body, [class*="css"] {
         font-family: 'Montserrat', sans-serif;
-        font-size: 15px;
+        font-size: 16px; /* Letras más grandes para mejor visualización */
         color: #3E2723;
     }
     
@@ -34,33 +34,44 @@ st.markdown(
     .header-container {
         text-align: center;
         background: linear-gradient(135deg, #7B1FA2 0%, #8E24AA 50%, #C2185B 100%);
-        padding: 18px;
+        padding: 16px;
         border-radius: 16px;
         border: 2px solid #F3E5F5;
         box-shadow: 0 6px 20px rgba(123, 31, 162, 0.35);
-        margin-bottom: 20px;
+        margin-bottom: 15px;
     }
     
     .header-title {
         font-weight: 900;
-        font-size: 2.2rem;
+        font-size: 2rem;
         color: #FFFFFF;
         margin: 0;
     }
 
+    /* ESTILO PARA FIJAR EL PANEL SUPERIOR */
+    .sticky-panel {
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        background: linear-gradient(135deg, #F3E5F5 0%, #E1BEE7 100%);
+        padding-top: 10px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #BA68C8;
+    }
+
     .card-resumen {
-        background-color: rgba(255, 255, 255, 0.96);
-        padding: 18px;
+        background-color: rgba(255, 255, 255, 0.98);
+        padding: 15px;
         border-radius: 14px;
         border: 2px solid #BA68C8;
         text-align: center;
-        box-shadow: 0 4px 12px rgba(123, 31, 162, 0.15);
+        box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2);
     }
     
     .tabla-header {
         font-weight: 800;
         color: #4A148C;
-        font-size: 15px;
+        font-size: 16px;
         text-transform: uppercase;
         padding-bottom: 8px;
         border-bottom: 2.5px solid #BA68C8;
@@ -83,7 +94,7 @@ st.markdown(
     """
     <div class="header-container">
         <h1 class="header-title">🌸 Tabla Maestra Definitiva - Finanzas Tatis 🌸</h1>
-        <p style="color: #F3E5F5; margin: 6px 0 0 0; font-weight: 700; font-size: 1.1rem;">Control milimétrico, entradas, salidas y saldo real al instante</p>
+        <p style="color: #F3E5F5; margin: 4px 0 0 0; font-weight: 700; font-size: 1rem;">Control milimétrico, entradas, salidas y saldo real al instante</p>
     </div>
 """,
     unsafe_allow_html=True,
@@ -404,7 +415,7 @@ if "movimientos" not in st.session_state:
       },
   ]
 
-# CÁLCULO DINÁMICO DE SALDOS Y TOTALES DE ADDI / SISTECREDITO
+# CÁLCULO DINÁMICO DE SALDOS Y TOTALES
 saldo_acumulado = 0.0
 tabla_calculada = []
 total_addi_pendiente = 68370.0 + 68370.0 + 286000.0
@@ -427,15 +438,16 @@ for mov in st.session_state.movimientos:
   })
 
 # -------------------------------------------------------------
-# MÉTRICAS SUPERIORES (SALDO EN CAJA, ADDI Y SISTECREDITO)
+# PANEL SUPERIOR FIJO (STICKY) CON MÉTRICAS
 # -------------------------------------------------------------
+st.markdown('<div class="sticky-panel">', unsafe_allow_html=True)
 col_m1, col_m2, col_m3 = st.columns(3)
 with col_m1:
   st.markdown(
       f"""
         <div class="card-resumen">
-            <h4 style="color:#6A1B9A; margin:0; font-size: 1.1rem;">💰 Saldo Actual en Caja</h4>
-            <h2 style="color:#4A148C; margin:8px 0 0 0; font-size: 1.8rem; font-weight: 900;">{formato_COP(saldo_acumulado)}</h2>
+            <h4 style="color:#6A1B9A; margin:0; font-size: 1rem;">💰 Saldo Actual en Caja</h4>
+            <h2 style="color:#4A148C; margin:5px 0 0 0; font-size: 1.6rem; font-weight: 900;">{formato_COP(saldo_acumulado)}</h2>
         </div>
     """,
       unsafe_allow_html=True,
@@ -444,8 +456,8 @@ with col_m2:
   st.markdown(
       f"""
         <div class="card-resumen">
-            <h4 style="color:#7B1FA2; margin:0; font-size: 1.1rem;">💳 Total Pendiente Addi</h4>
-            <h2 style="color:#8E24AA; margin:8px 0 0 0; font-size: 1.8rem; font-weight: 900;">{formato_COP(total_addi_pendiente)}</h2>
+            <h4 style="color:#7B1FA2; margin:0; font-size: 1rem;">💳 Total Pendiente Addi</h4>
+            <h2 style="color:#8E24AA; margin:5px 0 0 0; font-size: 1.6rem; font-weight: 900;">{formato_COP(total_addi_pendiente)}</h2>
         </div>
     """,
       unsafe_allow_html=True,
@@ -454,19 +466,20 @@ with col_m3:
   st.markdown(
       f"""
         <div class="card-resumen">
-            <h4 style="color:#AD1457; margin:0; font-size: 1.1rem;">🛍️ Total Sistecredito</h4>
-            <h2 style="color:#C2185B; margin:8px 0 0 0; font-size: 1.8rem; font-weight: 900;">{formato_COP(total_sistecredito_pendiente)}</h2>
+            <h4 style="color:#AD1457; margin:0; font-size: 1rem;">🛍️ Total Sistecredito</h4>
+            <h2 style="color:#C2185B; margin:5px 0 0 0; font-size: 1.6rem; font-weight: 900;">{formato_COP(total_sistecredito_pendiente)}</h2>
         </div>
     """,
       unsafe_allow_html=True,
   )
+st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# FILTRO POR QUINCENA / BLOQUE
+# FILTRO POR QUINCENA / BLOQUE Y RESUMEN DE CUENTAS
 st.markdown(
-    "<h4 style='color: #4A148C; font-weight: 800;'>🔍 Filtrar Vista por Bloque"
-    " / Quincena</h4>",
+    "<h4 style='color: #4A148C; font-weight: 800;'>🔍 Consultar Bloque /"
+    " Quincena Específica</h4>",
     unsafe_allow_html=True,
 )
 opciones_quincenas = ["Todas las Fechas (Mes Completo)"] + list(
@@ -480,10 +493,23 @@ if filtro_quincena != "Todas las Fechas (Mes Completo)":
   tabla_filtrada = [
       item for item in tabla_calculada if item["Quincena"] == filtro_quincena
   ]
+  # Calcular resumen de esta quincena
+  ent_q = sum(i["Entrada"] for i in tabla_filtrada)
+  sal_q = sum(i["Salida"] for i in tabla_filtrada)
+  st.markdown(
+      f"""
+        <div style="background-color: rgba(255,255,255,0.9); padding: 12px 18px; border-radius: 10px; border: 1.5px solid #AB47BC; margin: 10px 0 20px 0;">
+            <b style="color: #4A148C;">📊 Resumen de la Quincena Seleccionada:</b> 
+            Entradas: <span style="color: #2E7D32; font-weight: 700;">{formato_COP(ent_q)}</span> | 
+            Salidas: <span style="color: #C2185B; font-weight: 700;">{formato_COP(sal_q)}</span> | 
+            Neto del periodo: <span style="color: #6A1B9A; font-weight: 700;">{formato_COP(ent_q - sal_q)}</span>
+        </div>
+    """,
+      unsafe_allow_html=True,
+  )
 else:
   tabla_filtrada = tabla_calculada
 
-st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
     "<h3 style='color: #4A148C; font-weight: 900; margin-bottom: 15px;'>📋 Tabla"
     " Maestra Interactiva</h3>",
@@ -510,7 +536,7 @@ with h_cols[4]:
 with h_cols[5]:
   st.markdown("<div class='tabla-header'>Acción</div>", unsafe_allow_html=True)
 
-# RENDERIZAR FILAS CON EDICIÓN SEGURA
+# RENDERIZAR FILAS CON EDICIÓN Y GUARDADO AUTOMÁTICO
 for item in tabla_filtrada:
   real_idx = next(
       i
