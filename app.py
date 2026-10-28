@@ -148,201 +148,133 @@ def formato_COP(valor):
 
 if "obligaciones_base" not in st.session_state:
   st.session_state.obligaciones_base = [
-      # --- MITAD DE MES (DÍA 15) E INCLUYE LAS RESERVAS DE NICOLÁS QUE CAEN ANTES DE FIN DE MES ---
+      # --- MITAD DE MES (DÍA 15) ---
+      {
+          "id": "addi_alkosto",
+          "nombre": "Addi - Alkosto (Televisor Cristian)",
+          "valor": 286000.0,
+          "tipo": "Deuda Única",
+          "total": 1,
+          "pagadas": 0,
+          "periodo": "Mitad de Mes",
+          "fecha_pago": "30 de Oct",
+      },
+      {
+          "id": "addi_totto",
+          "nombre": "Addi - Totto (Cuota 3 de 5)",
+          "valor": 68370.0,
+          "tipo": "Crédito Addi",
+          "total": 5,
+          "pagadas": 2,
+          "periodo": "Mitad de Mes",
+          "fecha_pago": "30 de Oct",
+      },
+      {
+          "id": "addi_puntos",
+          "nombre": "Addi - Puntos Colombia (Cuota 8 de 9)",
+          "valor": 68370.0,
+          "tipo": "Crédito Addi",
+          "total": 9,
+          "pagadas": 7,
+          "periodo": "Mitad de Mes",
+          "fecha_pago": "30 de Oct",
+      },
       {
           "id": "camilo_m",
-          "nombre": "Deuda Camilo",
+          "nombre": "Deuda Camilo (Última cuota)",
           "valor": 373500.0,
           "tipo": "Crédito",
           "total": 6,
-          "pagadas": 2,
+          "pagadas": 5,
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "31 de Oct",
       },
       {
-          "id": "gas_m",
-          "nombre": "Gas (Ya Separado)",
-          "valor": 390000.0,
-          "tipo": "Servicio Cuotas",
-          "total": 12,
-          "pagadas": 7,
+          "id": "nic_tue_3",
+          "nombre": "Cuota Martes Nicolás (Nov 3)",
+          "valor": 360000.0,
+          "tipo": "Préstamo Semanal",
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "Martes Nov 3",
       },
       {
-          "id": "tc_m",
-          "nombre": "Tarjeta de Crédito (TC)",
-          "valor": 160000.0,
-          "tipo": "Crédito TC",
-          "total": 8,
-          "pagadas": 0,
+          "id": "nic_tue_10",
+          "nombre": "Cuota Martes Nicolás (Nov 10)",
+          "valor": 360000.0,
+          "tipo": "Préstamo Semanal",
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "Martes Nov 10",
       },
       {
           "id": "sist_vest",
-          "nombre": "Sistecredito Vestido",
+          "nombre": "Sistecredito - Vestido (Final)",
           "valor": 39413.0,
           "tipo": "Crédito",
           "total": 4,
           "pagadas": 3,
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "Nov 15",
       },
       {
           "id": "sist_sud",
-          "nombre": "Sistecredito Sudadera",
+          "nombre": "Sistecredito - Sudadera (Final)",
           "valor": 59599.0,
           "tipo": "Crédito",
           "total": 4,
           "pagadas": 3,
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "Nov 15",
       },
       {
           "id": "sist_mal",
-          "nombre": "Sistecredito Maleta (Totto)",
+          "nombre": "Sistecredito - Maleta Totto (Final)",
           "valor": 66051.0,
           "tipo": "Crédito",
           "total": 4,
           "pagadas": 3,
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
+          "fecha_pago": "Nov 15",
       },
       {
-          "id": "gerardo_m",
-          "nombre": "Deuda Gerardo",
-          "valor": 180000.0,
-          "tipo": "Deuda Única",
-          "total": 1,
-          "pagadas": 0,
+          "id": "gerardo_reserva_nov",
+          "nombre": "Reserva 1.ª Cuota Gerardo (Paga 25)",
+          "valor": 275000.0,
+          "tipo": "Reserva Obligatoria",
           "periodo": "Mitad de Mes",
-          "fecha_pago": "Primera Quincena",
+          "fecha_pago": "Nov 15",
       },
-      {
-          "id": "nic_sem_martes_22",
-          "nombre": "Reserva Cuota Nicolás (Martes 22)",
-          "valor": 216000.0,
-          "tipo": "Préstamo Semanal",
-          "periodo": "Mitad de Mes",
-          "fecha_pago": "Martes 22",
-      },
-      {
-          "id": "nic_sem_martes_29",
-          "nombre": "Reserva Cuota Nicolás (Martes 29)",
-          "valor": 216000.0,
-          "tipo": "Préstamo Semanal",
-          "periodo": "Mitad de Mes",
-          "fecha_pago": "Martes 29",
-      },
-      {
-          "id": "internet_m",
-          "nombre": "Internet Q1",
-          "valor": 55000.0,
-          "tipo": "Fijo",
-          "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
-      },
-      {
-          "id": "parq_m",
-          "nombre": "Parqueadero Q1",
-          "valor": 25000.0,
-          "tipo": "Fijo",
-          "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
-      },
-      {
-          "id": "libres_m",
-          "nombre": "Gastos Libres Q1",
-          "valor": 100000.0,
-          "tipo": "Libre",
-          "periodo": "Mitad de Mes",
-          "fecha_pago": "Día 15",
-      },
-      # --- FIN DE MES (DÍA 20) ---
-      {
-          "id": "camilo_f",
-          "nombre": "Deuda Camilo (Fin)",
-          "valor": 373500.0,
-          "tipo": "Crédito",
-          "total": 6,
-          "pagadas": 2,
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
-      },
-      {
-          "id": "tecno_moto",
-          "nombre": "Tecnomecánica Moto",
-          "valor": 223700.0,
-          "tipo": "Crédito Moto",
-          "total": 6,
-          "pagadas": 0,
-          "periodo": "Fin de Mes",
-          "fecha_pago": "28 de Sept",
-      },
+      # --- FIN DE MES (DÍA 20 / 30) ---
       {
           "id": "gas_f",
-          "nombre": "Gas (Fin)",
-          "valor": 390000.0,
-          "tipo": "Servicio Cuotas",
-          "total": 12,
-          "pagadas": 7,
+          "nombre": "Factura del Gas (Completa)",
+          "valor": 800000.0,
+          "tipo": "Servicio Fuerte",
           "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
+          "fecha_pago": "Nov 10",
       },
       {
           "id": "tc_f",
-          "nombre": "Tarjeta de Crédito (Fin)",
+          "nombre": "Tarjeta de Crédito (TC)",
           "valor": 160000.0,
           "tipo": "Crédito TC",
-          "total": 8,
-          "pagadas": 0,
           "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
+          "fecha_pago": "Nov 10",
       },
       {
-          "id": "gerardo_f",
-          "nombre": "Deuda Gerardo (Fin)",
-          "valor": 180000.0,
-          "tipo": "Deuda Única",
-          "total": 1,
-          "pagadas": 0,
+          "id": "nic_tue_17",
+          "nombre": "Cuota Martes Nicolás (Nov 17)",
+          "valor": 360000.0,
+          "tipo": "Préstamo Semanal",
           "periodo": "Fin de Mes",
-          "fecha_pago": "Segunda Quincena",
+          "fecha_pago": "Martes Nov 17",
       },
       {
-          "id": "internet_f",
-          "nombre": "Internet Q2",
-          "valor": 77000.0,
-          "tipo": "Fijo",
+          "id": "nic_tue_24",
+          "nombre": "Cuota Martes Nicolás (Nov 24 - Final)",
+          "valor": 360000.0,
+          "tipo": "Préstamo Semanal",
           "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
-      },
-      {
-          "id": "parq_f",
-          "nombre": "Parqueadero Q2",
-          "valor": 60000.0,
-          "tipo": "Fijo",
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
-      },
-      {
-          "id": "libres_f",
-          "nombre": "Gastos Libres Q2",
-          "valor": 100000.0,
-          "tipo": "Libre",
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
-      },
-      {
-          "id": "addi_m",
-          "nombre": "Cuota Addi (Mamá)",
-          "valor": 110000.0,
-          "tipo": "Crédito Addi",
-          "total": 3,
-          "pagadas": 1,
-          "periodo": "Fin de Mes",
-          "fecha_pago": "Día 20",
+          "fecha_pago": "Martes Nov 24",
       },
   ]
 
@@ -352,7 +284,8 @@ if "imprevistos_por_periodo" not in st.session_state:
   st.session_state.imprevistos_por_periodo = {}
 if "prestamos_por_cobrar" not in st.session_state:
   st.session_state.prestamos_por_cobrar = [
-      {"deudor": "Tania", "valor": 20000.0, "fecha_pago": "Pendiente"}
+      {"deudor": "Karen", "valor": 880000.0, "fecha_pago": "Oct 30"},
+      {"deudor": "Gerardo", "valor": 900000.0, "fecha_pago": "Oct 30"},
   ]
 
 # TÍTULO PRINCIPAL
@@ -370,26 +303,20 @@ st.markdown('<div class="config-box-compact">', unsafe_allow_html=True)
 col_cfg1, col_cfg2, col_cfg3, col_cfg4 = st.columns(4)
 with col_cfg1:
   saldo_actual_banco = st.number_input(
-      "Banco + Nequi (COP)", value=540427.0, step=10000.0
+      "Efectivo / Banco (COP)", value=100000.0, step=10000.0
   )
 with col_cfg2:
   nomina_quincenal_neta = st.number_input(
-      "Nómina Neta", value=1294007.0, step=10000.0
+      "Nómina Quincenal Neta", value=1194000.0, step=10000.0
   )
 with col_cfg3:
   mes_seleccionado = st.selectbox(
       "Mes",
       [
-          "Marzo 2026",
-          "Abril 2026",
-          "Mayo 2026",
-          "Junio 2026",
-          "Julio 2026",
-          "Agosto 2026",
-          "Septiembre 2026",
           "Octubre 2026",
           "Noviembre 2026",
           "Diciembre 2026",
+          "Enero 2027",
       ],
       key="select_mes_main",
   )
@@ -427,7 +354,6 @@ total_pagado_obligaciones_actual = sum(
     item["valor"]
     for item in obligaciones_activas
     if item["periodo"] == periodo_filtro
-    and item["id"] != "gas_m"
     and pagos_actuales.get(item["id"], False)
 )
 total_imprevistos = sum(
@@ -449,7 +375,7 @@ st.sidebar.markdown(f"### 💜 {clave_periodo_actual}")
 st.sidebar.markdown(
     f"""
     <div class="liberado-box">
-        <span style="font-size:0.7rem; font-weight:800; color:#6A1B9A;">✨ Dinero Liberado ✨</span><br>
+        <span style="font-size:0.7rem; font-weight:800; color:#6A1B9A;">✨ Sistecredito / Addi por Terminar ✨</span><br>
         <span style="font-size:1.05rem; font-weight:900; color:#8E24AA;">{formato_COP(dinero_liberado_total)}</span>
     </div>
 """,
@@ -459,7 +385,7 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar">
-        <h6 style="color:#6A1B9A; margin:0; font-weight:700;">📥 Nómina Neta</h6>
+        <h6 style="color:#6A1B9A; margin:0; font-weight:700;">📥 Ingreso Quincenal Base</h6>
         <div class="metric-value-gigante">{formato_COP(presupuesto_quincena_inicial)}</div>
     </div>
 """,
@@ -479,7 +405,7 @@ st.sidebar.markdown(
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar">
-        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos del Mes</h6>
+        <h6 style="color:#AD1457; margin:0; font-weight:700;">🚨 Imprevistos</h6>
         <div class="metric-value-gigante">{formato_COP(total_imprevistos)}</div>
     </div>
 """,
@@ -490,7 +416,7 @@ color_queda = "#7B1FA2" if quincena_que_queda >= 0 else "#C2185B"
 st.sidebar.markdown(
     f"""
     <div class="metric-card-sidebar" style="border: 2px solid {color_queda}; background: #FCE4EC;">
-        <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ REALMENTE LIBRE ({mes_seleccionado}) ✨</h6>
+        <h6 style="color:{color_queda}; margin:0; font-weight:800;">✨ SALDO LIBRE RESTANTE ✨</h6>
         <div class="metric-value-gigante" style="color:{color_queda}; font-size:1.3rem;">{formato_COP(quincena_que_queda)}</div>
     </div>
 """,
@@ -499,24 +425,14 @@ st.sidebar.markdown(
 
 total_deuda_global = sum(
     item["valor"]
-    * max(
-        0,
-        (
-            item["total"] - item["pagadas"]
-            if "total" in item
-            else (0 if "Reserva" in item["nombre"] else 1)
-        ),
-    )
-    if "total" in item or "Reserva" not in item["nombre"]
-    else item["valor"]
     for item in obligaciones_activas
 )
 
 st.sidebar.markdown(
     f"""
 <div class="global-dark-box-sidebar">
-    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">👑 Deuda Global Pendiente</div>
-    <div style="font-size: 1.05rem; font-weight: 900; color: #FFFFFF; margin-top:2px;">{formato_COP(total_deuda_global)}</div>
+    <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase;">👑 Prima Diciembre (100% Blindada)</div>
+    <div style="font-size: 1.05rem; font-weight: 900; color: #FFFFFF; margin-top:2px;">Libre para Comparendos 🛡️</div>
 </div>
 """,
     unsafe_allow_html=True,
@@ -679,7 +595,7 @@ for i in range(0, len(items_filtrados), cols_por_fila):
         else:
           progreso_html = f"""
                     <div style="background-color: #FCE4EC; border-radius: 8px; height: 22px; width: 100%; position: relative; margin-bottom: 8px; overflow: hidden; border: 1.5px solid #F48FB1; text-align: center; font-size: 11px; font-weight: 800; color: #AD1457; line-height: 20px;">
-                        Reserva Semanal 🗓️
+                        Compromiso Fijo 💜
                     </div>
                     """
         st.markdown(progreso_html, unsafe_allow_html=True)
@@ -768,7 +684,7 @@ with tab_deudas:
           "periodo": n_periodo,
           "fecha_pago": n_fecha_pago if n_fecha_pago else "Por definir",
       })
-      st.success("¡Deuda guardada correctamente y sumada a la deuda global!")
+      st.success("¡Deuda guardada correctamente!")
       st.rerun()
 
 with tab_resumen:
@@ -814,7 +730,7 @@ with tab_resumen:
         f"""
             <div class="kiut-card-grid">
                 <h5 style="color:#6A1B9A; margin-top:0;">🌸 Mitad de Mes (Día 15)</h5>
-                <p><b>Total Obligaciones & Reservas:</b> {formato_COP(tot_mitad)}</p>
+                <p><b>Total Obligaciones:</b> {formato_COP(tot_mitad)}</p>
                 <p><b>Pagado/Separado:</b> {formato_COP(pagado_mitad)}</p>
                 <p><b>Pendiente:</b> {formato_COP(tot_mitad - pagado_mitad)}</p>
             </div>
