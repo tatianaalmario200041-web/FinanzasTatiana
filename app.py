@@ -15,7 +15,7 @@ st.markdown(
     
     html, body, [class*="css"] {
         font-family: 'Montserrat', sans-serif;
-        font-size: 15px; /* Letras más grandes y legibles */
+        font-size: 15px;
         color: #3E2723;
     }
     
@@ -60,11 +60,11 @@ st.markdown(
     .tabla-header {
         font-weight: 800;
         color: #4A148C;
-        font-size: 16px;
+        font-size: 15px;
         text-transform: uppercase;
         padding-bottom: 8px;
         border-bottom: 2.5px solid #BA68C8;
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
     </style>
 """,
@@ -407,8 +407,8 @@ if "movimientos" not in st.session_state:
 # CÁLCULO DINÁMICO DE SALDOS Y TOTALES DE ADDI / SISTECREDITO
 saldo_acumulado = 0.0
 tabla_calculada = []
-total_addi_pendiente = 68370.0 + 68370.0 + 286000.0  # Totto + Puntos + Alkosto
-total_sistecredito_pendiente = 39413.0 + 59599.0 + 66051.0  # Vestido + Sudadera + Maleta
+total_addi_pendiente = 68370.0 + 68370.0 + 286000.0
+total_sistecredito_pendiente = 39413.0 + 59599.0 + 66051.0
 
 for mov in st.session_state.movimientos:
   if mov["hecho"]:
@@ -472,7 +472,9 @@ st.markdown(
 opciones_quincenas = ["Todas las Fechas (Mes Completo)"] + list(
     pd.DataFrame(tabla_calculada)["Quincena"].unique()
 )
-filtro_quincena = st.selectbox("", opciones_quincenas, label_visibility="collapsed")
+filtro_quincena = st.selectbox(
+    "Filtro", opciones_quincenas, label_visibility="collapsed"
+)
 
 if filtro_quincena != "Todas las Fechas (Mes Completo)":
   tabla_filtrada = [
@@ -484,7 +486,7 @@ else:
 st.markdown("<br>", unsafe_allow_html=True)
 st.markdown(
     "<h3 style='color: #4A148C; font-weight: 900; margin-bottom: 15px;'>📋 Tabla"
-    " Maestra Interactiva (Puedes editar los valores directamente)</h3>",
+    " Maestra Interactiva</h3>",
     unsafe_allow_html=True,
 )
 
@@ -508,9 +510,8 @@ with h_cols[4]:
 with h_cols[5]:
   st.markdown("<div class='tabla-header'>Acción</div>", unsafe_allow_html=True)
 
-# RENDERIZAR FILAS CON EDICIÓN DE VALORES Y CHECKBOX AUTOMÁTICO
+# RENDERIZAR FILAS CON EDICIÓN SEGURA
 for item in tabla_filtrada:
-  # Encontrar el índice real en st.session_state.movimientos
   real_idx = next(
       i
       for i, m in enumerate(st.session_state.movimientos)
@@ -530,9 +531,8 @@ for item in tabla_filtrada:
         unsafe_allow_html=True,
     )
   with cols[2]:
-    # Permitir editar la entrada si es un valor editable
     nueva_entrada = st.number_input(
-        f"Entrada_{item['id']}",
+        "Entrada",
         value=float(item["Entrada"]),
         step=10000.0,
         label_visibility="collapsed",
@@ -543,9 +543,8 @@ for item in tabla_filtrada:
       st.rerun()
 
   with cols[3]:
-    # Permitir editar la salida si es un valor editable
     nueva_salida = st.number_input(
-        f"Salida_{item['id']}",
+        "Salida",
         value=float(item["Salida"]),
         step=10000.0,
         label_visibility="collapsed",
